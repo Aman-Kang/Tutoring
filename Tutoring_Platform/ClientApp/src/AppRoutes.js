@@ -5,6 +5,8 @@ import { StudentLookForTutor } from "./components/StudentLookForTutor";
 import { StudentHelp } from "./components/StudentHelp";
 import { StudentAccount } from "./components/StudentAccount";
 
+import { TutorAppointments } from "./components/TutorAppointments";
+
 const AppRoutes = [
   
       {
@@ -30,6 +32,10 @@ const AppRoutes = [
     {
         path: '/account',
         element: <StudentAccount />
+    },
+    {
+        path: '/tutor-appointments',
+        element: <TutorAppointments />
     }
 
 ];
