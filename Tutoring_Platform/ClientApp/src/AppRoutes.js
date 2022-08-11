@@ -7,6 +7,7 @@ import { StudentAccount } from "./components/StudentAccount";
 
 import { TutorAppointments } from "./components/TutorAppointments";
 import { TutorMessageRequests } from "./components/TutorMessageRequests";
+import { TutorAccount } from "./components/TutorAccount";
 
 const AppRoutes = [
   
@@ -27,11 +28,11 @@ const AppRoutes = [
         element: <StudentLookForTutor />
     },
     {
-        path: '/help',
+        path: '/student-help',
         element: <StudentHelp />
     },
     {
-        path: '/account',
+        path: '/student-account',
         element: <StudentAccount />
     },
     {
@@ -41,6 +42,10 @@ const AppRoutes = [
     {
         path: '/tutor-message-requests',
         element: <TutorMessageRequests />
+    },
+    {
+        path: '/tutor-account',
+        element: <TutorAccount />
     }
 
 ];
