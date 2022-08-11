@@ -6,6 +6,7 @@ import { StudentHelp } from "./components/StudentHelp";
 import { StudentAccount } from "./components/StudentAccount";
 
 import { TutorAppointments } from "./components/TutorAppointments";
+import { TutorMessageRequests } from "./components/TutorMessageRequests";
 
 const AppRoutes = [
   
@@ -36,6 +37,10 @@ const AppRoutes = [
     {
         path: '/tutor-appointments',
         element: <TutorAppointments />
+    },
+    {
+        path: '/tutor-message-requests',
+        element: <TutorMessageRequests />
     }
 
 ];
