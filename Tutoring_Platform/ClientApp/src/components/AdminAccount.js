@@ -1,11 +1,12 @@
 ﻿import React, { Component } from 'react';
 
-export class TutorAccount extends Component {
-    static displayName = TutorAccount.name;
+export class AdminAccount extends Component {
+    static displayName = AdminAccount.name;
+
     render() {
         return (
             <div>
-                <h3>Tutor</h3>
+                <h3>First Name</h3>
             </div>
         );
     }

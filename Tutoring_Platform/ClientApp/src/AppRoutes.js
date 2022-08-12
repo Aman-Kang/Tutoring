@@ -8,6 +8,10 @@ import { StudentAccount } from "./components/StudentAccount";
 import { TutorAppointments } from "./components/TutorAppointments";
 import { TutorMessageRequests } from "./components/TutorMessageRequests";
 import { TutorAccount } from "./components/TutorAccount";
+import { AdminCheckStats } from "./components/AdminCheckStats";
+import { AdminUserMsg } from "./components/AdminUserMsg";
+import { AdminReportAcct } from "./components/AdminReportAcct";
+import { AdminAccount } from "./components/AdminAccount";
 
 const AppRoutes = [
   
@@ -46,6 +50,22 @@ const AppRoutes = [
     {
         path: '/tutor-account',
         element: <TutorAccount />
+    },
+    {
+        path: '/check-statistics',
+        element: <AdminCheckStats />
+    },
+    {
+        path: '/user-messages',
+        element: <AdminUserMsg />
+    },
+    {
+        path: '/reported-accounts',
+        element: <AdminReportAcct />
+    },
+    {
+        path: '/admin-account',
+        element: <AdminAccount />
     }
 
 ];
