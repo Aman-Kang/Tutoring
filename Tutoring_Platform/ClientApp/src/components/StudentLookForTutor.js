@@ -7,8 +7,25 @@ export class StudentLookForTutor extends Component {
         return (
             <div>
                 <p>Enter the below mentioned details so that we can find you a prefect tutor!</p>
+                <div className="row">
+                    <div className="col-6">
+                        <p>Program Course in which you need help (Write the full name of the course)</p>
+                        <p><input type="text" /></p>
+                        <button>Submit</button>
+                    </div>
+                    <div className="col-6">
+                        <p>What days of the week you want the tutoring sessions:</p>
+                        <p><input type="checkbox" /> Sunday</p>
+                        <p><input type="checkbox" /> Monday</p>
+                        <p><input type="checkbox" /> Tuesday</p>
+                        <p><input type="checkbox" /> Wednesday</p>
+                        <p><input type="checkbox" /> Thursday</p>
+                        <p><input type="checkbox" /> Friday</p>
+                        <p><input type="checkbox" /> Saturday</p>
+                    </div>
+                </div>
                 <p>List of tutors based on your search:</p>
-            </div>
+            </div>  
         );
     }
 }
