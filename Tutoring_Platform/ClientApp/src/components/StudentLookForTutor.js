@@ -25,6 +25,25 @@ export class StudentLookForTutor extends Component {
                     </div>
                 </div>
                 <p>List of tutors based on your search:</p>
+                <p>Filters</p>
+                <div className="row">
+                    <div className="col-3">
+                        <p>Status</p>
+                        <p></p>
+                    </div>
+                    <div className="col-3">
+                        <p>Wage</p>
+                        <p></p>
+                    </div>
+                    <div className="col-3">
+                        <p>School</p>
+                        <p></p>
+                    </div>
+                    <div className="col-3">
+                        <p>Program</p>
+                        <p></p>
+                    </div>
+                </div>
             </div>  
         );
     }
