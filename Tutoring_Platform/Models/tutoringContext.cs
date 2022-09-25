@@ -9,6 +9,7 @@ namespace Tutoring_Platform.Models
     {
         public tutoringContext()
         {
+
         }
 
         public tutoringContext(DbContextOptions<tutoringContext> options)
