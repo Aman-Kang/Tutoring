@@ -1,4 +1,5 @@
 ﻿import React, { Component } from 'react';
+import { Profile } from './Profile';
 
 export class AdminAccount extends Component {
     static displayName = AdminAccount.name;
@@ -6,7 +7,7 @@ export class AdminAccount extends Component {
     render() {
         return (
             <div>
-                <h3>First Name</h3>
+                <Profile />
             </div>
         );
     }

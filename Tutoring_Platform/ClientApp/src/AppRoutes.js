@@ -1,3 +1,4 @@
+import { Home } from "./components/Home";
 import { Counter } from "./components/Counter";
 import { FetchData } from "./components/FetchData";
 import { StudentAppointments } from "./components/StudentAppointments";
@@ -25,8 +26,12 @@ const AppRoutes = [
       },
       {
         index: true,
+        element: <Home />
+    },
+    {
+        path: '/student-appointments',
         element: <StudentAppointments />
-      },
+    },
     {
         path: '/look-for-tutor',
         element: <StudentLookForTutor />

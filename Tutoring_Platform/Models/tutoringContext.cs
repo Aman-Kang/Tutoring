@@ -9,7 +9,6 @@ namespace Tutoring_Platform.Models
     {
         public tutoringContext()
         {
-
         }
 
         public tutoringContext(DbContextOptions<tutoringContext> options)
@@ -32,11 +31,6 @@ namespace Tutoring_Platform.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Server=(localdb)\\ProjectModels;Database=tutoring;Trusted_Connection=True;");
-            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -44,6 +38,10 @@ namespace Tutoring_Platform.Models
             modelBuilder.Entity<AdminReply>(entity =>
             {
                 entity.ToTable("admin_replies");
+
+                entity.HasIndex(e => e.AdminId, "IX_admin_replies_admin_id");
+
+                entity.HasIndex(e => e.UserId, "IX_admin_replies_user_id");
 
                 entity.Property(e => e.Id)
                     .ValueGeneratedNever()
@@ -74,6 +72,8 @@ namespace Tutoring_Platform.Models
             {
                 entity.ToTable("appoint_confirm");
 
+                entity.HasIndex(e => e.SlotId, "IX_appoint_confirm_slot_id");
+
                 entity.Property(e => e.Id)
                     .ValueGeneratedNever()
                     .HasColumnName("id");
@@ -98,6 +98,10 @@ namespace Tutoring_Platform.Models
             modelBuilder.Entity<AppointRequest>(entity =>
             {
                 entity.ToTable("appoint_requests");
+
+                entity.HasIndex(e => e.StudId, "IX_appoint_requests_stud_id");
+
+                entity.HasIndex(e => e.TutorId, "IX_appoint_requests_tutor_id");
 
                 entity.Property(e => e.Id)
                     .ValueGeneratedNever()
@@ -129,6 +133,8 @@ namespace Tutoring_Platform.Models
             {
                 entity.ToTable("appoint_slots");
 
+                entity.HasIndex(e => e.RequestId, "IX_appoint_slots_request_id");
+
                 entity.Property(e => e.Id)
                     .ValueGeneratedNever()
                     .HasColumnName("id");
@@ -152,6 +158,8 @@ namespace Tutoring_Platform.Models
             modelBuilder.Entity<DaysAvailable>(entity =>
             {
                 entity.ToTable("days_available");
+
+                entity.HasIndex(e => e.UserId, "IX_days_available_user_id");
 
                 entity.Property(e => e.Id)
                     .ValueGeneratedNever()
@@ -184,6 +192,8 @@ namespace Tutoring_Platform.Models
             {
                 entity.ToTable("help_queries");
 
+                entity.HasIndex(e => e.UserId, "IX_help_queries_user_id");
+
                 entity.Property(e => e.Id)
                     .ValueGeneratedNever()
                     .HasColumnName("id");
@@ -205,6 +215,8 @@ namespace Tutoring_Platform.Models
             {
                 entity.ToTable("report_account");
 
+                entity.HasIndex(e => e.UserId, "IX_report_account_user_id");
+
                 entity.Property(e => e.Id)
                     .ValueGeneratedNever()
                     .HasColumnName("id");
@@ -223,6 +235,8 @@ namespace Tutoring_Platform.Models
             modelBuilder.Entity<Statistic>(entity =>
             {
                 entity.ToTable("statistics");
+
+                entity.HasIndex(e => e.AdminId, "IX_statistics_admin_id");
 
                 entity.Property(e => e.Id)
                     .ValueGeneratedNever()
@@ -248,6 +262,8 @@ namespace Tutoring_Platform.Models
             modelBuilder.Entity<StudTutorInfo>(entity =>
             {
                 entity.ToTable("stud_tutor_info");
+
+                entity.HasIndex(e => e.UserId, "IX_stud_tutor_info_user_id");
 
                 entity.Property(e => e.Id)
                     .ValueGeneratedNever()
@@ -308,6 +324,8 @@ namespace Tutoring_Platform.Models
             {
                 entity.ToTable("tutor_courses");
 
+                entity.HasIndex(e => e.TutorId, "IX_tutor_courses_tutor_id");
+
                 entity.Property(e => e.Id)
                     .ValueGeneratedNever()
                     .HasColumnName("id");
@@ -329,6 +347,8 @@ namespace Tutoring_Platform.Models
             modelBuilder.Entity<TutorInfo>(entity =>
             {
                 entity.ToTable("tutor_info");
+
+                entity.HasIndex(e => e.UserId, "IX_tutor_info_user_id");
 
                 entity.Property(e => e.Id)
                     .ValueGeneratedNever()
@@ -354,27 +374,20 @@ namespace Tutoring_Platform.Models
             {
                 entity.ToTable("user");
 
-                entity.Property(e => e.Id)
-                    .ValueGeneratedNever()
-                    .HasColumnName("id");
+                entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.Email)
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("email");
 
-                entity.Property(e => e.FirstName)
+                entity.Property(e => e.Name)
                     .HasMaxLength(50)
                     .IsUnicode(false)
-                    .HasColumnName("first_name");
-
-                entity.Property(e => e.LastName)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("last_name");
+                    .HasColumnName("name");
 
                 entity.Property(e => e.Password)
-                    .HasMaxLength(50)
+                    .HasMaxLength(200)
                     .IsUnicode(false)
                     .HasColumnName("password");
 

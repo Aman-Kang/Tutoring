@@ -1,5 +1,7 @@
 ﻿import React, { Component } from 'react';
 import { useState } from 'react';
+import { CustomAccordion } from './CustomAccordion';
+
 export function StudentLookForTutor(){
     const [courseName, setCourseName] = useState("");
     const [sunday, setSunday] = useState(0);
@@ -96,7 +98,6 @@ export function StudentLookForTutor(){
         }).then(res => res.json())
             .then(data => {
                 setTutors(data);
-                console.log(data);
         });
     }
 
@@ -122,11 +123,7 @@ export function StudentLookForTutor(){
                     </div>
                 </div>
             </form>
-            {
-                tutors.map((t,index) => {
-                    console.log(t);
-                })
-            }
+            
             <p>List of tutors based on your search:</p>
             <p>Filters</p>
             <div className="row">
@@ -146,6 +143,35 @@ export function StudentLookForTutor(){
                     <p>Program</p>
                     <p></p>
                 </div>
+                <div>
+                    {tutors.map((t, index) =>
+                        <div key={index}>
+                            <CustomAccordion title={t.Name}
+                                content={
+                                    <div>
+                                        <p>School {t.School}</p>
+                                        <p>Status {t.Status}</p>
+                                        <p>Wage {t.Wage}</p>
+                                    </div>
+                                } />
+                            <br />
+                        </div>
+                    )}
+                {
+                    tutors.map((t, index) => {
+                        console.log(t);
+                        console.log(t.Name);
+                        console.log(t.School);
+                        <div key={index}>
+                            <p>{t.Status}</p>
+                            <CustomAccordion
+                                title={t.Name}
+                                content={t.Program + "<br/>" + t.School + "<br/>" + t.Status + "<br/>" + t.Wage}
+                            />
+                        </div>
+                    })
+                    }
+                 </div>
             </div>
         </div>  
     );

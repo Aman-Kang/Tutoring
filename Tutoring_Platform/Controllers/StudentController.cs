@@ -2,6 +2,8 @@
 using System.Linq;
 using Newtonsoft.Json;
 using Tutoring_Platform.Models;
+using Tutoring_Platform.CustomModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Tutoring_Platform.Controllers
 {
@@ -14,42 +16,51 @@ namespace Tutoring_Platform.Controllers
         {
             db = dbModel;
         }
-
+        //[Authorize("read:messages")]
+        [Route("FindRole")]
+        [HttpPost]
+        public string FindRole([FromBody]string email)
+        {
+            string role = "";
+            IEnumerable<string> userRole = from u in db.Users
+                       where u.Email == email
+                       select u.Role;
+            
+            if (userRole != null)
+            {
+                role = userRole.First();
+            }
+            return role;
+        }
+        //[Authorize("read:messages")]
         [Route("SearchTutors")]
         [HttpPost]
         public string SearchTutors([FromBody]LookForTutorParam tutorParams)
-        {
-            Console.WriteLine("****************************************************************************");            
-            Console.WriteLine(tutorParams.CourseName);
+        {          
             string jsonResults = "";
             string[,] allTutors = new string[1,1];
             if (tutorParams.CourseName != null && tutorParams.Days != null)
             {
-                Console.WriteLine("****************************************************************************");
-                Console.WriteLine(tutorParams.Days[0].ToString());
                 allTutors = searchTutors( tutorParams.CourseName, tutorParams.Days);
-                Console.WriteLine("I am out of model");
                 List<SearchTutorsReturn> results = new List<SearchTutorsReturn>();
                 for(int i = 0; i < allTutors.GetLength(0); i++)
                 {
                     results.Add(new SearchTutorsReturn
                     {
-                        FirstName = allTutors[i, 0],
-                        LastName = allTutors[i, 1],
-                        School=allTutors[i, 2],
-                        Program=allTutors[i, 3],
-                        Status=allTutors[i, 4],
-                        Wage=allTutors[i, 5]
+                        Name = allTutors[i, 0],
+                        School = allTutors[i, 1],
+                        Program = allTutors[i, 2],
+                        Status = allTutors[i, 3],
+                        Wage = allTutors[i, 4]
                     });
                 }
                 jsonResults = JsonConvert.SerializeObject(results);
-                Console.WriteLine(jsonResults);
                 return jsonResults;
             }
             return jsonResults;
         }
 
-        public string[,] searchTutors(string course, int[] days)
+        private string[,] searchTutors(string course, int[] days)
 
         {
             Console.WriteLine("****************************************************************************");
@@ -60,7 +71,6 @@ namespace Tutoring_Platform.Controllers
             IEnumerable<TutorInfo> tutor = (from t in db.TutorInfos select t).ToList<TutorInfo>();
             IEnumerable<StudTutorInfo> stud_Tutor_Info = (from sti in db.StudTutorInfos select sti).ToList<StudTutorInfo>();
             IEnumerable<User> user_ = (from u in db.Users select u).ToList<User>();
-            Console.WriteLine(tutorCourses.ToArray().Length);
             List<DaysAvailable> daysAvailable = new List<DaysAvailable>();
             int studentDays = 0;
             foreach(int day in days)
@@ -114,33 +124,30 @@ namespace Tutoring_Platform.Controllers
             IEnumerable<TutorInfo> tutorInfo = (from ti in tutorInfoList
                                                 join da in daysAvailable on ti.Id equals da.UserId
                                                 select ti).ToList<TutorInfo>();
-
-            Console.WriteLine(tutorInfo.ToArray().Length);
             
             IEnumerable<StudTutorInfo> studTutorInfo = (from sti in stud_Tutor_Info
                                                           join ti in tutorInfo on sti.Id equals ti.UserId
                                                           select sti).ToList<StudTutorInfo>();
-            Console.WriteLine(studTutorInfo.ToArray().Length);
             
             IEnumerable<User> user = from u in user_
                                     join sti in studTutorInfo on u.Id equals sti.UserId
                                     select u;
-            Console.WriteLine(user.ToArray().Length);
-            string[,] returnValue = new String[user.Count(), 6];
+            string[,] returnValue = new String[user.Count(), 5];
             int i = 0;
             foreach (var u in user)
             {
-                Console.WriteLine(u.FirstName);
-                returnValue[i, 0] = u.FirstName.ToString();
-                returnValue[i, 1] = u.LastName.ToString();
+                if(u.Name != null)
+                {
+                    returnValue[i, 0] = u.Name.ToString();
+                }
                 i += 1;
             }
             i = 0;
             foreach (var s in studTutorInfo)
             {
                 Console.WriteLine(s.School);
-                returnValue[i, 2] = s.School.ToString();
-                returnValue[i, 3] = s.Program.ToString();
+                returnValue[i, 1] = s.School.ToString();
+                returnValue[i, 2] = s.Program.ToString();
                 i += 1;
             }
             i = 0;
@@ -148,8 +155,8 @@ namespace Tutoring_Platform.Controllers
             foreach (var t in tutorInfo)
             {
                 Console.WriteLine(t.Status);
-                returnValue[i, 4] = t.Status.ToString();
-                returnValue[i, 5] = t.Wage.ToString();
+                returnValue[i, 3] = t.Status.ToString();
+                returnValue[i, 4] = t.Wage.ToString();
                 i += 1;
             }
             
