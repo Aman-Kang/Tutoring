@@ -2,7 +2,9 @@
 import { useState } from 'react';
 import { CustomAccordion } from './CustomAccordion';
 
-export function StudentLookForTutor(){
+export function StudentLookForTutor() {
+    
+    //this.sendTutorRequest = this.sendTutorRequest.bind(this);
     const [courseName, setCourseName] = useState("");
     const [sunday, setSunday] = useState(0);
     const [monday, setMonday] = useState(0);
@@ -12,6 +14,10 @@ export function StudentLookForTutor(){
     const [friday, setFriday] = useState(0);
     const [saturday, setSaturday] = useState(0);
     const [tutors, setTutors] = useState([]);
+    const [finalCourse, setFinalCourse] = useState("");
+    const [finalDays, setFinalDays] = useState([]);
+    const [tutorId, setTutorId] = useState(0);
+    const [studId, setStudId] = useState(0);
 
     const courseNameChange = (e) => {
         setCourseName(e.target.value);
@@ -101,6 +107,29 @@ export function StudentLookForTutor(){
         });
     }
 
+    const submitTutorRequest = (e) => {
+        e.preventDefault();
+    }
+
+    function sendTutorRequest(courseName, days, tutorId, studId) {
+        console.log(courseName + ", " + days + ", " + tutorId + ", " + studId)
+        fetch('student/SendTutorRequest', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                courseName: courseName,
+                days: days,
+                tutorId: tutorId,
+                studId: studId
+            })
+        }).then(res => res.text())
+            .then(data => {
+                console.log(data);
+            });
+    }
+
     return (
         <div>
             <p>Enter the below mentioned details so that we can find you a prefect tutor!</p>
@@ -152,11 +181,14 @@ export function StudentLookForTutor(){
                                         <p>School {t.School}</p>
                                         <p>Status {t.Status}</p>
                                         <p>Wage {t.Wage}</p>
+                                        
                                     </div>
                                 } />
                             <br />
+                            <button onClick={(e) => sendTutorRequest(t.CourseName, t.Days, t.tutorId, t.studId,e)}>Send Tutor Request</button>
                         </div>
-                    )}
+                    )
+                    }
                 {
                     tutors.map((t, index) => {
                         console.log(t);

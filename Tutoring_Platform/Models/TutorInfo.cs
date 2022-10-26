@@ -14,8 +14,8 @@ namespace Tutoring_Platform.Models
 
         public int Id { get; set; }
         public int UserId { get; set; }
-        public string Status { get; set; } = null!;
-        public float Wage { get; set; }
+        public string? Status { get; set; }
+        public float? Wage { get; set; }
 
         public virtual StudTutorInfo User { get; set; } = null!;
         public virtual ICollection<AppointRequest> AppointRequests { get; set; }

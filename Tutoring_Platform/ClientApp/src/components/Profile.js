@@ -13,7 +13,7 @@ export function Profile() {
 
                     < h2 >{user.name}</ h2 >
                     < p >{user.email}</ p >
-                    <p>{user.sub}</p>
+                    <p>{user.sub.substring(6)}</p>
 
                 </ div >
             </div>

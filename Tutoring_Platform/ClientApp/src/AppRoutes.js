@@ -25,7 +25,7 @@ const AppRoutes = [
         element: <FetchData />
       },
       {
-        index: true,
+        index: '/home',
         element: <Home />
     },
     {

@@ -17,14 +17,14 @@ namespace Tutoring_Platform.Models
         public int Id { get; set; }
         public int UserId { get; set; }
         public string Role { get; set; } = null!;
-        public string Address { get; set; } = null!;
-        public string City { get; set; } = null!;
-        public string Province { get; set; } = null!;
-        public string PostalCode { get; set; } = null!;
-        public string School { get; set; } = null!;
-        public string StudyField { get; set; } = null!;
-        public string Program { get; set; } = null!;
-        public int Semester { get; set; }
+        public string? Address { get; set; }
+        public string? City { get; set; }
+        public string? Province { get; set; }
+        public string? PostalCode { get; set; }
+        public string? School { get; set; }
+        public string? StudyField { get; set; }
+        public string? Program { get; set; }
+        public int? Semester { get; set; }
 
         public virtual User User { get; set; } = null!;
         public virtual ICollection<AdminReply> AdminReplies { get; set; }

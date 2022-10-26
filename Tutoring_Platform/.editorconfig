@@ -17,6 +17,9 @@ csharp_style_expression_bodied_accessors = true:silent
 csharp_style_expression_bodied_lambdas = true:silent
 csharp_style_expression_bodied_local_functions = false:silent
 
+# CS8601: Possible null reference assignment.
+dotnet_diagnostic.CS8601.severity = silent
+
 [*.{cs,vb}]
 #### Naming styles ####
 

@@ -6,6 +6,7 @@ import './NavMenu.css';
 import LogoutButton from './LogoutButton';
 import LoginButton from './LoginButton';
 import RegisterButton from './RegisterButton';
+import { StudentDataForm } from './StudentDataForm';
 
 import { useAuth0 }
     from "@auth0/auth0-react";
@@ -13,6 +14,7 @@ import { useAuth0 }
 export function NavBar(){
     const [collapsed, setCollapsed] = useState(true);
     const [role, setRole] = useState("");
+    const [showDialog, setShowDialog] = useState(0);
     const { user, isAuthenticated} = useAuth0();
     const toggleNavbar = () => {
         setCollapsed(!collapsed);
@@ -45,76 +47,142 @@ export function NavBar(){
             body: JSON.stringify(user.email)
         }).then(res => res.text())
             .then(data => {
-                console.log("Role: "+data);
                 setRole(data);
+            });
+    }
+
+    const isUserCreated = () => {
+        fetch('student/UserCreated', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(user.sub.substring(6))
+        }).then(res => res.text())
+            .then(data => {
+                setShowDialog(data);
             });
     }
     
     if (isAuthenticated) {
         findRole();
         if (role == "student") {
-            return (
-                <header>
-                    <Navbar className="navbar-expand-sm navbar-toggleable-sm ng-white border-bottom box-shadow mb-3" container light>
+            isUserCreated();
+            if (showDialog == 1) {
+                return (
+                    <div>
+                        <header>
+                            <Navbar className="navbar-expand-sm navbar-toggleable-sm ng-white border-bottom box-shadow mb-3" container light>
+                                <NavbarBrand>Tutoring Platform</NavbarBrand>
+                                <NavbarToggler onClick={toggleNavbar} className="mr-2" />
+                                <Collapse className="d-sm-inline-flex flex-sm-row-reverse" isOpen={!collapsed} navbar>
+                                    <ul className="navbar-nav flex-grow">
+                                        <NavItem>
+                                            <LogoutButton />
+                                        </NavItem>
+                                        <NavItem>
+                                            {user.email}
+                                        </NavItem>
+                                    </ul>
+                                </Collapse>
+                            </Navbar>
+                            
+                        </header>
+                        
+                        <StudentDataForm role={role }/>
+                   </div>
+                );
+            } else {
+                return (
+                    <header>
+                        <Navbar className="navbar-expand-sm navbar-toggleable-sm ng-white border-bottom box-shadow mb-3" container light>
+                            <NavbarBrand tag={Link} to="/">Tutoring Platform</NavbarBrand>
+                            <NavbarToggler onClick={toggleNavbar} className="mr-2" />
+                            <Collapse className="d-sm-inline-flex flex-sm-row-reverse" isOpen={!collapsed} navbar>
+                                <ul className="navbar-nav flex-grow">
+                                    <NavItem>
+                                        <NavLink tag={Link} className="text-dark" to="/student-appointments">Appointments</NavLink>
+                                    </NavItem>
+                                    <NavItem>
+                                        <NavLink tag={Link} className="text-dark" to="/look-for-tutor">Look For Tutor</NavLink>
+                                    </NavItem>
+                                    <NavItem>
+                                        <NavLink tag={Link} className="text-dark" to="/student-help">Help</NavLink>
+                                    </NavItem>
+                                    <NavItem>
+                                        <NavLink tag={Link} className="text-dark" to="/student-account">Account</NavLink>
+                                    </NavItem>
+                                    <NavItem>
+                                        <LogoutButton />
+                                    </NavItem>
+                                    <NavItem>
+                                        {user.email}
+                                    </NavItem>
+                                </ul>
+                            </Collapse>
+                        </Navbar>
+                    </header>
+                );
+            }
+            
+        } else if (role == "tutor") {
+            isUserCreated();
+            if (showDialog == 1) {
+                return (
+                    <div>
+                        <header>
+                            <Navbar className="navbar-expand-sm navbar-toggleable-sm ng-white border-bottom box-shadow mb-3" container light>
+                                <NavbarBrand tag={Link} to="/">Tutoring Platform</NavbarBrand>
+                                <NavbarToggler onClick={toggleNavbar} className="mr-2" />
+                                <Collapse className="d-sm-inline-flex flex-sm-row-reverse" isOpen={!collapsed} navbar>
+                                    <ul className="navbar-nav flex-grow">
+                                        <NavItem>
+                                            <LogoutButton />
+                                        </NavItem>
+                                        <NavItem>
+                                            {user.email}
+                                        </NavItem>
+                                    </ul>
+                                </Collapse>
+                            </Navbar>
+                        </header>
 
-                        <NavbarBrand tag={Link} to="/">Tutoring Platform</NavbarBrand>
-                        <NavbarToggler onClick={toggleNavbar} className="mr-2" />
-                        <Collapse className="d-sm-inline-flex flex-sm-row-reverse" isOpen={!collapsed} navbar>
-                            <ul className="navbar-nav flex-grow">
-                                <NavItem>
-                                    <NavLink tag={Link} className="text-dark" to="/student-appointments">Appointments</NavLink>
-                                </NavItem>
-                                <NavItem>
-                                    <NavLink tag={Link} className="text-dark" to="/look-for-tutor">Look For Tutor</NavLink>
-                                </NavItem>
-                                <NavItem>
-                                    <NavLink tag={Link} className="text-dark" to="/student-help">Help</NavLink>
-                                </NavItem>
-                                <NavItem>
-                                    <NavLink tag={Link} className="text-dark" to="/student-account">Account</NavLink>
-                                </NavItem>
-                                <NavItem>
-                                    <LogoutButton />
-                                </NavItem>
-                                <NavItem>
-                                    {user.email}
-                                </NavItem>
-                            </ul>
-                        </Collapse>
-                    </Navbar>
-                </header>
-            );
-        }else if(role == "tutor") {
-            return (
-                <header>
-                    <Navbar className="navbar-expand-sm navbar-toggleable-sm ng-white border-bottom box-shadow mb-3" container light>
-                        <NavbarBrand tag={Link} to="/">Tutoring Platform</NavbarBrand>
-                        <NavbarToggler onClick={toggleNavbar} className="mr-2" />
-                        <Collapse className="d-sm-inline-flex flex-sm-row-reverse" isOpen={!collapsed} navbar>
-                            <ul className="navbar-nav flex-grow">
-                                <NavItem>
-                                    <NavLink tag={Link} className="text-dark" to="/tutor-appointments">Appointments</NavLink>
-                                </NavItem>
-                                <NavItem>
-                                    <NavLink tag={Link} className="text-dark" to="/tutor-message-requests">Tutoring Message Requests</NavLink>
-                                </NavItem>
-                                <NavItem>
-                                    <NavLink tag={Link} className="text-dark" to="/student-help">Help</NavLink>
-                                </NavItem>
-                                <NavItem>
-                                    <NavLink tag={Link} className="text-dark" to="/tutor-account">Account</NavLink>
-                                </NavItem>
-                                <NavItem>
-                                    <LogoutButton />
-                                </NavItem>
-                                <NavItem>
-                                    {user.email}
-                                </NavItem>
-                            </ul>
-                        </Collapse>
-                    </Navbar>
-                </header>
-            );
+                        <StudentDataForm role={role }/>
+                    </div>
+                );
+            }
+            else {
+                return (
+                    <header>
+                        <Navbar className="navbar-expand-sm navbar-toggleable-sm ng-white border-bottom box-shadow mb-3" container light>
+                            <NavbarBrand tag={Link} to="/">Tutoring Platform</NavbarBrand>
+                            <NavbarToggler onClick={toggleNavbar} className="mr-2" />
+                            <Collapse className="d-sm-inline-flex flex-sm-row-reverse" isOpen={!collapsed} navbar>
+                                <ul className="navbar-nav flex-grow">
+                                    <NavItem>
+                                        <NavLink tag={Link} className="text-dark" to="/tutor-appointments">Appointments</NavLink>
+                                    </NavItem>
+                                    <NavItem>
+                                        <NavLink tag={Link} className="text-dark" to="/tutor-message-requests">Tutoring Message Requests</NavLink>
+                                    </NavItem>
+                                    <NavItem>
+                                        <NavLink tag={Link} className="text-dark" to="/student-help">Help</NavLink>
+                                    </NavItem>
+                                    <NavItem>
+                                        <NavLink tag={Link} className="text-dark" to="/tutor-account">Account</NavLink>
+                                    </NavItem>
+                                    <NavItem>
+                                        <LogoutButton />
+                                    </NavItem>
+                                    <NavItem>
+                                        {user.email}
+                                    </NavItem>
+                                </ul>
+                            </Collapse>
+                        </Navbar>
+                    </header>
+                );
+            }
         }else if(role == "admin") {
             return (
                 <header>

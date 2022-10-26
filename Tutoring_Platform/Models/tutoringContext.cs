@@ -31,6 +31,7 @@ namespace Tutoring_Platform.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -43,9 +44,7 @@ namespace Tutoring_Platform.Models
 
                 entity.HasIndex(e => e.UserId, "IX_admin_replies_user_id");
 
-                entity.Property(e => e.Id)
-                    .ValueGeneratedNever()
-                    .HasColumnName("id");
+                entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.AdminId).HasColumnName("admin_id");
 
@@ -74,9 +73,7 @@ namespace Tutoring_Platform.Models
 
                 entity.HasIndex(e => e.SlotId, "IX_appoint_confirm_slot_id");
 
-                entity.Property(e => e.Id)
-                    .ValueGeneratedNever()
-                    .HasColumnName("id");
+                entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.MeetingLink)
                     .IsUnicode(false)
@@ -103,18 +100,30 @@ namespace Tutoring_Platform.Models
 
                 entity.HasIndex(e => e.TutorId, "IX_appoint_requests_tutor_id");
 
-                entity.Property(e => e.Id)
-                    .ValueGeneratedNever()
-                    .HasColumnName("id");
+                entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.Course)
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("course");
 
+                entity.Property(e => e.Friday).HasColumnName("friday");
+
+                entity.Property(e => e.Monday).HasColumnName("monday");
+
+                entity.Property(e => e.Saturday).HasColumnName("saturday");
+
                 entity.Property(e => e.StudId).HasColumnName("stud_id");
 
+                entity.Property(e => e.Sunday).HasColumnName("sunday");
+
+                entity.Property(e => e.Thursday).HasColumnName("thursday");
+
+                entity.Property(e => e.Tuesday).HasColumnName("tuesday");
+
                 entity.Property(e => e.TutorId).HasColumnName("tutor_id");
+
+                entity.Property(e => e.Wednesday).HasColumnName("wednesday");
 
                 entity.HasOne(d => d.Stud)
                     .WithMany(p => p.AppointRequests)
@@ -135,9 +144,7 @@ namespace Tutoring_Platform.Models
 
                 entity.HasIndex(e => e.RequestId, "IX_appoint_slots_request_id");
 
-                entity.Property(e => e.Id)
-                    .ValueGeneratedNever()
-                    .HasColumnName("id");
+                entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.RequestId).HasColumnName("request_id");
 
@@ -161,9 +168,7 @@ namespace Tutoring_Platform.Models
 
                 entity.HasIndex(e => e.UserId, "IX_days_available_user_id");
 
-                entity.Property(e => e.Id)
-                    .ValueGeneratedNever()
-                    .HasColumnName("id");
+                entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.Friday).HasColumnName("friday");
 
@@ -194,9 +199,7 @@ namespace Tutoring_Platform.Models
 
                 entity.HasIndex(e => e.UserId, "IX_help_queries_user_id");
 
-                entity.Property(e => e.Id)
-                    .ValueGeneratedNever()
-                    .HasColumnName("id");
+                entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.Query)
                     .IsUnicode(false)
@@ -217,9 +220,7 @@ namespace Tutoring_Platform.Models
 
                 entity.HasIndex(e => e.UserId, "IX_report_account_user_id");
 
-                entity.Property(e => e.Id)
-                    .ValueGeneratedNever()
-                    .HasColumnName("id");
+                entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.AccountId).HasColumnName("account_id");
 
@@ -238,9 +239,7 @@ namespace Tutoring_Platform.Models
 
                 entity.HasIndex(e => e.AdminId, "IX_statistics_admin_id");
 
-                entity.Property(e => e.Id)
-                    .ValueGeneratedNever()
-                    .HasColumnName("id");
+                entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.AdminId).HasColumnName("admin_id");
 
@@ -265,9 +264,7 @@ namespace Tutoring_Platform.Models
 
                 entity.HasIndex(e => e.UserId, "IX_stud_tutor_info_user_id");
 
-                entity.Property(e => e.Id)
-                    .ValueGeneratedNever()
-                    .HasColumnName("id");
+                entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.Address)
                     .HasMaxLength(50)
@@ -326,9 +323,7 @@ namespace Tutoring_Platform.Models
 
                 entity.HasIndex(e => e.TutorId, "IX_tutor_courses_tutor_id");
 
-                entity.Property(e => e.Id)
-                    .ValueGeneratedNever()
-                    .HasColumnName("id");
+                entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.Course)
                     .HasMaxLength(50)
@@ -350,9 +345,7 @@ namespace Tutoring_Platform.Models
 
                 entity.HasIndex(e => e.UserId, "IX_tutor_info_user_id");
 
-                entity.Property(e => e.Id)
-                    .ValueGeneratedNever()
-                    .HasColumnName("id");
+                entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.Status)
                     .HasMaxLength(50)
