@@ -40,11 +40,31 @@
     }
     public class DisplayRequestsReturn
     {
+        public int? Id { get; set; }
         public string? CourseName { get; set; }
         public int[]? Days { get; set; }
         public string? Name { get; set; }
         public string? Semester { get; set; }
         public string? School { get; set; }
         public string? Program { get; set; }
+    }
+    public class DisplayStudRequestsReturn
+    {
+        public string? Name { get; set; }
+        public string? CourseName { get; set; }
+        public string? Slot1 { get; set; }
+        public string? Slot2 { get; set; }
+        public string? Slot3 { get; set; }
+        public string? Slot4 { get; set; }
+        public string? Slot5 { get; set; }
+    }
+    public class SendAppointSlots
+    {
+        public int? requestId { get; set; }
+        public string? Slot1 { get; set; }
+        public string? Slot2 { get; set; }
+        public string? Slot3 { get; set; }
+        public string? Slot4 { get; set; }
+        public string? Slot5 { get; set; }
     }
 }

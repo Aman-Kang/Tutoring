@@ -26,6 +26,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy"
       },
+      "use64Bit": true,
       "sqlDebugging": true,
       "nativeDebugging": true
     }

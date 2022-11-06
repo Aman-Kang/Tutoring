@@ -3,8 +3,6 @@ import { useState } from 'react';
 import { CustomAccordion } from './CustomAccordion';
 
 export function StudentLookForTutor() {
-    
-    //this.sendTutorRequest = this.sendTutorRequest.bind(this);
     const [courseName, setCourseName] = useState("");
     const [sunday, setSunday] = useState(0);
     const [monday, setMonday] = useState(0);
@@ -14,10 +12,6 @@ export function StudentLookForTutor() {
     const [friday, setFriday] = useState(0);
     const [saturday, setSaturday] = useState(0);
     const [tutors, setTutors] = useState([]);
-    const [finalCourse, setFinalCourse] = useState("");
-    const [finalDays, setFinalDays] = useState([]);
-    const [tutorId, setTutorId] = useState(0);
-    const [studId, setStudId] = useState(0);
 
     const courseNameChange = (e) => {
         setCourseName(e.target.value);
@@ -107,10 +101,6 @@ export function StudentLookForTutor() {
         });
     }
 
-    const submitTutorRequest = (e) => {
-        e.preventDefault();
-    }
-
     function sendTutorRequest(courseName, days, tutorId, studId) {
         console.log(courseName + ", " + days + ", " + tutorId + ", " + studId)
         fetch('student/SendTutorRequest', {
@@ -188,20 +178,6 @@ export function StudentLookForTutor() {
                             <button onClick={(e) => sendTutorRequest(t.CourseName, t.Days, t.tutorId, t.studId,e)}>Send Tutor Request</button>
                         </div>
                     )
-                    }
-                {
-                    tutors.map((t, index) => {
-                        console.log(t);
-                        console.log(t.Name);
-                        console.log(t.School);
-                        <div key={index}>
-                            <p>{t.Status}</p>
-                            <CustomAccordion
-                                title={t.Name}
-                                content={t.Program + "<br/>" + t.School + "<br/>" + t.Status + "<br/>" + t.Wage}
-                            />
-                        </div>
-                    })
                     }
                  </div>
             </div>

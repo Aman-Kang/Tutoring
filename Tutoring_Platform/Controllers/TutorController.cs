@@ -21,8 +21,6 @@ namespace Tutoring_Platform.Controllers
         [HttpPost]
         public string GetTutorRequests([FromBody] string userId)
         {
-            Console.WriteLine("******************************************************");
-            Console.WriteLine(userId.ToString());
             int user = Convert.ToInt32(userId);
             string jsonResults = "";
             IEnumerable<int> studId = from sti in db.StudTutorInfos
@@ -39,6 +37,7 @@ namespace Tutoring_Platform.Controllers
             {
 
                 int getRequestStudId = appointRequests[i].StudId;
+                int requestId = appointRequests[i].Id;
                 Console.WriteLine(getRequestStudId.ToString());
                 var getStudData = from sti in db.StudTutorInfos
                                   where sti.Id == getRequestStudId
@@ -48,6 +47,7 @@ namespace Tutoring_Platform.Controllers
                                   select u.Name;
                 results.Add(new DisplayRequestsReturn
                 {
+                    Id = requestId,
                     Name = getStudName.First(),
                     Semester = getStudData.First().Semester.ToString(),
                     Program = getStudData.First().Program,
@@ -61,5 +61,68 @@ namespace Tutoring_Platform.Controllers
 
             return jsonResults;
         }
-    }
+
+        [Route("SendAppointSlots")]
+        [HttpPost]
+        public string SendAppointSlots([FromBody] SendAppointSlots sendAppointSlots)
+        {
+            
+            string jsonResults = "";
+            if (sendAppointSlots.requestId != null && sendAppointSlots.Slot1 != null && sendAppointSlots.Slot2 != null && sendAppointSlots.Slot3 != null &&
+                sendAppointSlots.Slot4 != null && sendAppointSlots.Slot5 != null)
+            {
+                int requestId = Convert.ToInt32(sendAppointSlots.requestId);
+                AppointSlot aSlot = new AppointSlot
+                {
+                    RequestId = requestId,
+                    Slot = sendAppointSlots.Slot1,
+                    Selected = false
+                };
+
+                db.AppointSlots.Add(aSlot);
+                AppointSlot aSlot2 = new AppointSlot
+                {
+                    RequestId = requestId,
+                    Slot = sendAppointSlots.Slot2,
+                    Selected = false
+                };
+
+                db.AppointSlots.Add(aSlot2);
+                AppointSlot aSlot3 = new AppointSlot
+                {
+                    RequestId = requestId,
+                    Slot = sendAppointSlots.Slot3,
+                    Selected = false
+                };
+
+                db.AppointSlots.Add(aSlot3);
+                AppointSlot aSlot4 = new AppointSlot
+                {
+                    RequestId = requestId,
+                    Slot = sendAppointSlots.Slot4,
+                    Selected = false
+                };
+
+                db.AppointSlots.Add(aSlot4);
+                AppointSlot aSlot5 = new AppointSlot
+                {
+                    RequestId = requestId,
+                    Slot = sendAppointSlots.Slot5,
+                    Selected = false
+                };
+
+                db.AppointSlots.Add(aSlot5);
+                try
+                {
+                    db.SaveChanges();
+                    jsonResults = "Time slots sent";
+                }
+                catch
+                {
+                    jsonResults = "Could not send time slots";
+                }
+            }
+            return jsonResults;
+        }
+        }
 }
