@@ -18,6 +18,7 @@
     {
         public string? CourseName { get; set; }
         public int[]? Days { get; set; }
+        public int UserId { get; set; }
     }
     public class SearchTutorsReturn
     {
@@ -57,6 +58,11 @@
         public string? Slot3 { get; set; }
         public string? Slot4 { get; set; }
         public string? Slot5 { get; set; }
+        public int? Id1 { get; set; }
+        public int? Id2 { get; set; }
+        public int? Id3 { get; set; }
+        public int? Id4 { get; set; }
+        public int? Id5 { get; set; }
     }
     public class SendAppointSlots
     {
@@ -67,4 +73,27 @@
         public string? Slot4 { get; set; }
         public string? Slot5 { get; set; }
     }
+    public class GetConfirmedAppoint
+    {
+        public string? Name { get; set; }
+        public string? Course { get; set; }
+        public string? Slot { get; set; }
+        public int? Id { get; set; }
+    }
+    public class AddToAppoints
+    {
+        public int? slotId { get; set; }
+        public string? paypal { get; set; }
+        public string? zoom { get; set; }
+    }
+
+    public class GetAppointments
+    {
+        public string? Date { get; set; }
+        public string? Course { get; set; }
+        public string? TutorStud { get; set; }
+        public string? Paypal { get; set; }
+        public string? Zoom { get; set; }
+    }
+
 }

@@ -1,15 +1,106 @@
-﻿import React, { Component } from 'react';
+﻿import React from 'react';
+import { useState } from 'react';
+import { useAuth0 }
+    from "@auth0/auth0-react";
+import { CustomAccordion } from './CustomAccordion';
 
-export class TutorAppointments extends Component {
-    static displayName = TutorAppointments.name;
+export function TutorAppointments(){
+    const { user, isAuthenticated } = useAuth0();
+    const [appointments, setAppointments] = useState([]);
+    const [paypal, setPaypal] = useState("");
+    const [zoom, setZoom] = useState("");
+    const [appointmentsA, setAppointmentsA] = useState([]);
 
-    render() {
-        return (
-            <div>
-                <p>It is your responsibility to check that the student has transferred the money to your account an hour before every session. If the transfer is not made, you can choose to not go to the session.</p>
-                <h3>Upcoming Appointments</h3>
-                <h3>Confirmed Appointments By Students</h3>
-            </div>
-        );
+    const displayAppoints = () => {
+        fetch('tutor/GetConfirmedAppointments', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(user.sub.substring(6))
+        }).then(res => res.json())
+            .then(data => {
+                setAppointments(data);
+            });
     }
+
+    const paypalChange = (e) => {
+        setPaypal(e.target.value);
+    }
+    const zoomChange = (e) => {
+        setZoom(e.target.value);
+    }
+
+    function confirmAppoint(slotId) {
+        console.log(slotId);
+        fetch('tutor/AddToAppoints', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                slotId: slotId,
+                paypal: paypal,
+                zoom:zoom
+            })
+        }).then(res => res.text())
+            .then(data => {
+                console.log(data);
+            });
+    }
+    const getAppointments = () => {
+        fetch('tutor/GetAppointments', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(user.sub.substring(6))
+        }).then(res => res.json())
+            .then(data => {
+                setAppointmentsA(data);
+            });
+    }
+    return (
+        <div>
+            <p>It is your responsibility to check that the student has transferred the money to your account an hour before every session. If the transfer is not made, you can choose to not go to the session.</p>
+            <h3>Upcoming Appointments</h3>
+            {getAppointments()}
+            {appointmentsA.map((a, index) =>
+                <div key={index}>
+                    <CustomAccordion title={a.Date}
+                        content={
+                            <div>
+                                <p>Course {a.Course}</p>
+                                <p>Student: {a.TutorStud}</p>
+                                <p>Meeting Link: {a.Zoom}</p>
+                            </div>
+                        } />
+                    <br />
+                </div>
+            )
+            }
+            <h3>Confirmed Appointments By Students</h3>
+            {displayAppoints()}
+            {
+                appointments.map((a, index) =>
+                    <div key={index}>
+                        <CustomAccordion title={a.Name}
+                            content={
+                                <div>
+                                    <p>Course: {a.Course}</p>
+                                    <p>Date and Time: {a.Slot}</p>
+                                    <p>Enter Paypal link: <input type="text" value={paypal} onChange={paypalChange} /></p>
+                                    <p>Enter Zoom link: <input type="text" value={zoom} onChange={zoomChange} /></p>
+                                    {console.log(a.Id )}
+                                    <button onClick={(e) => confirmAppoint(a.Id, e)}>Add to upcoming appointments</button>
+                                </div>
+
+                            } />
+                        <br />
+                    </div>
+                )
+            }
+        </div>
+    );
+    
 }

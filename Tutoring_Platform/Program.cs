@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using Tutoring_Platform.CustomModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,18 +32,16 @@ builder.Services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();*/
 
 builder.Services.AddDbContext<tutoringContext>(options =>
                 options.UseSqlServer("Data Source=tutoringplatform-199.database.windows.net,1433;Initial Catalog=tutoring;User ID=amandeep_kaur;Password=Aman543!"));
+builder.Services.AddControllers();
+
 var app = builder.Build();
-
-// configure the http request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    
-}
-
 app.UseStaticFiles();
 app.UseRouting();
+
 //app.UseAuthentication();
 //app.UseAuthorization();
+app.MapControllers();
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller}/{action=index}/{id?}");

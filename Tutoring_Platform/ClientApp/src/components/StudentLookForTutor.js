@@ -1,8 +1,11 @@
 ﻿import React, { Component } from 'react';
 import { useState } from 'react';
 import { CustomAccordion } from './CustomAccordion';
+import { useAuth0 }
+    from "@auth0/auth0-react";
 
 export function StudentLookForTutor() {
+    const { user, isAuthenticated } = useAuth0();
     const [courseName, setCourseName] = useState("");
     const [sunday, setSunday] = useState(0);
     const [monday, setMonday] = useState(0);
@@ -93,7 +96,8 @@ export function StudentLookForTutor() {
             },
             body: JSON.stringify({
                 courseName: courseName,
-                days: [sunday, monday, tuesday, wednesday, thursday, friday, saturday]
+                days: [sunday, monday, tuesday, wednesday, thursday, friday, saturday],
+                userId: user.sub.substring(6)
             })
         }).then(res => res.json())
             .then(data => {

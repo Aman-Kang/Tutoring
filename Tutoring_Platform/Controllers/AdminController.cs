@@ -16,46 +16,5 @@ namespace Tutoring_Platform.Controllers
         {
             db = dbModel;
         }
-
-        [Route("GetTutorRequests")]
-        [HttpPost]
-        public string GetTutorRequests([FromBody] string userId)
-        {
-            Console.WriteLine("******************************************************");
-            Console.WriteLine(userId.ToString());
-            int user = Convert.ToInt32(userId);
-            string jsonResults = "";
-            IEnumerable<int> studId = from sti in db.StudTutorInfos
-                                      where sti.UserId == user
-                                      select sti.Id;
-            IEnumerable<int> tutorId = from ti in db.TutorInfos
-                                       where ti.UserId == studId.First()
-                                       select ti.Id;
-            AppointRequest[] appointRequests = (from ar in db.AppointRequests
-                                                where ar.TutorId == tutorId.First()
-                                                select ar).ToArray();
-            List<DisplayRequestsReturn> results = new List<DisplayRequestsReturn>();
-            for (int i = 0; i < appointRequests.Count(); i++)
-            {
-
-                int getRequestStudId = appointRequests[i].StudId;
-                Console.WriteLine(getRequestStudId.ToString());
-                var getStudData = from sti in db.StudTutorInfos
-                                  where sti.Id == getRequestStudId
-                                  select new { sti.Semester, sti.Program, sti.School };
-                results.Add(new DisplayRequestsReturn
-                {
-                    Semester = getStudData.First().Semester.ToString(),
-                    Program = getStudData.First().Program,
-                    School = getStudData.First().School,
-                    CourseName = appointRequests[i].Course,
-                    Days = new int[] {Convert.ToInt32(appointRequests[i].Sunday), Convert.ToInt32(appointRequests[i].Monday) , Convert.ToInt32(appointRequests[i].Tuesday) , Convert.ToInt32(appointRequests[i].Wednesday) ,
-                        Convert.ToInt32(appointRequests[i].Thursday),Convert.ToInt32(appointRequests[i].Friday),Convert.ToInt32(appointRequests[i].Saturday)}
-                });
-            }
-            jsonResults = JsonConvert.SerializeObject(results);
-
-            return jsonResults;
-        }
     }
 }

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace Tutoring_Platform.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("student")]
     public class StudentController : ControllerBase
     {
         private tutoringContext db;
@@ -136,7 +136,7 @@ namespace Tutoring_Platform.Controllers
             string[,] allTutors = new string[1,1];
             if (tutorParams.CourseName != null && tutorParams.Days != null)
             {
-                allTutors = searchTutors( tutorParams.CourseName, tutorParams.Days);
+                allTutors = searchTutors( tutorParams.CourseName, tutorParams.Days,tutorParams.UserId);
                 List<SearchTutorsReturn> results = new List<SearchTutorsReturn>();
                 for(int i = 0; i < allTutors.GetLength(0); i++)
                 {
@@ -185,8 +185,6 @@ namespace Tutoring_Platform.Controllers
                 };
 
                 db.AppointRequests.Add(aRequest);
-                
-                // Submit the change to the database.
                 try
                 {
                     db.SaveChanges();
@@ -200,11 +198,9 @@ namespace Tutoring_Platform.Controllers
             return jsonResults;
         }
 
-        private string[,] searchTutors(string course, int[] days)
-
+        private string[,] searchTutors(string course, int[] days,int userId)
         {
-            Console.WriteLine("****************************************************************************");
-            
+            Console.WriteLine(userId);
             IEnumerable<TutorCourse> tutorCourses = (from t in db.TutorCourses
                                where t.Course.Contains(course)
                                select t).ToList<TutorCourse>();
@@ -272,7 +268,14 @@ namespace Tutoring_Platform.Controllers
             IEnumerable<User> user = from u in user_
                                     join sti in studTutorInfo on u.Id equals sti.UserId
                                     select u;
+
+            IEnumerable<StudTutorInfo> studTutorInfo2 = (from sti in stud_Tutor_Info
+                                                        where sti.UserId == userId
+                                                        select sti).ToList<StudTutorInfo>();
+            Console.WriteLine(studTutorInfo2.ToArray().Length);
+            Console.WriteLine(studTutorInfo2.First().Id);
             string[,] returnValue = new String[user.Count(), 7];
+            
             int i = 0;
             foreach (var u in user)
             {
@@ -285,9 +288,8 @@ namespace Tutoring_Platform.Controllers
             i = 0;
             foreach (var s in studTutorInfo)
             {
-                Console.WriteLine(s.School);
-                returnValue[i, 1] = s.Id.ToString();
-                if(s.School != null && s.Program != null)
+                returnValue[i, 1] = studTutorInfo2.First().Id.ToString();
+                if (s.School != null && s.Program != null)
                 {
                     returnValue[i, 2] = s.School.ToString();
                     returnValue[i, 3] = s.Program.ToString();
@@ -298,7 +300,6 @@ namespace Tutoring_Platform.Controllers
             
             foreach (var t in tutorInfo)
             {
-                Console.WriteLine(t.Status);
                 if(t.Status != null && t.Wage != null)
                 {
                     returnValue[i, 4] = t.Status.ToString();
@@ -316,14 +317,15 @@ namespace Tutoring_Platform.Controllers
         public string DisplayRequests([FromBody] string userId)
         {
             int user = Convert.ToInt32(userId);
-            Console.WriteLine(user);
             string jsonResults = "";
             IEnumerable<int> studId = from sti in db.StudTutorInfos
                                       where sti.UserId == user
                                       select sti.Id;
+            Console.WriteLine(studId.First());
             var requestsMade =( from ar in db.AppointRequests
                              where ar.StudId == studId.First()
                              select new {ar.Id, ar.Course, ar.TutorId }).ToArray();
+            Console.WriteLine(requestsMade[0]);
             List<DisplayStudRequestsReturn> results = new List<DisplayStudRequestsReturn>();
             for (int i = 0; i < requestsMade.Count(); i++)
             {
@@ -331,14 +333,14 @@ namespace Tutoring_Platform.Controllers
                                         where ti.Id == requestsMade[i].TutorId
                                         select ti.User.User.Name;
                 string courseName = requestsMade[i].Course;
-                string[] slots = (from asl in db.AppointSlots
+                var slots = (from asl in db.AppointSlots
                             where asl.RequestId == requestsMade[i].Id
-                            select asl.Slot).ToArray();
-                var slot1 = slots[0];
-                var slot2 = slots[1];
-                var slot3 = slots[2];
-                var slot4 = slots[3];
-                var slot5 = slots[4];
+                            select new { asl.Id,asl.Slot }).ToArray();
+                var slot1 = slots[0].Slot;
+                var slot2 = slots[1].Slot;
+                var slot3 = slots[2].Slot;
+                var slot4 = slots[3].Slot;
+                var slot5 = slots[4].Slot;
 
                 results.Add(new DisplayStudRequestsReturn
                 {
@@ -348,11 +350,77 @@ namespace Tutoring_Platform.Controllers
                     Slot2 = slot2,
                     Slot3 = slot3,
                     Slot4 = slot4,
-                    Slot5 = slot5
+                    Slot5 = slot5,
+                    Id1 = slots[0].Id,
+                    Id2 = slots[1].Id,
+                    Id3 = slots[2].Id,
+                    Id4 = slots[3].Id,
+                    Id5 = slots[4].Id,
                 });
             }
             jsonResults = JsonConvert.SerializeObject(results);
             return jsonResults;
+        }
+        [Route("SendConfirmedSlot")]
+        [HttpPost]
+        public string SendConfirmedSlot([FromBody] string slot)
+        {
+            int slotId = Convert.ToInt32(slot);
+            if(slotId > 0)
+            {
+                IEnumerable<AppointSlot> appointSlots = from asl in db.AppointSlots
+                                                        where asl.Id == slotId
+                                                        select asl;
+                foreach(AppointSlot appointSlot in appointSlots)
+                {
+                    appointSlot.Selected = true;
+                }
+                try
+                {
+                    db.SaveChanges();
+                    return "Slot Selected";
+                }
+                catch { }
+            }
+            return "Slot could not be Selected";
+        }
+
+        [Route("GetAppointments")]
+        [HttpPost]
+        public string GetAppointments([FromBody] string userId)
+        {
+            int user = Convert.ToInt32(userId);
+            string jsonResults = "";
+            List<GetAppointments> results = new List<GetAppointments>();
+            IEnumerable<int> studId = from sti in db.StudTutorInfos
+                                      where sti.UserId == user
+                                      select sti.Id;
+            var requestId = (from ar in db.AppointRequests
+                      where ar.StudId == studId.First()
+                      select new { ar.Id,ar.Course,ar.Tutor.User.User.Name }).ToArray();
+            if(requestId.Count() > 0)
+            {
+                for(int i = 0; i < requestId.Count(); i++)
+                {
+                    var slotId = from asl in db.AppointSlots
+                                              where asl.RequestId == requestId[i].Id && asl.Selected == true
+                                              select new { asl.Id ,asl.Slot};
+                    var confirmAppoint = from ac in db.AppointConfirms
+                                                      where ac.SlotId == slotId.First().Id
+                                                      select new { ac.Id ,ac.PaypalLink,ac.MeetingLink};
+                    GetAppointments getAppointments = new GetAppointments
+                    {
+                        Date = slotId.First().Slot,
+                        Course = requestId[i].Course,
+                        TutorStud = requestId[i].Name,
+                        Paypal = confirmAppoint.First().PaypalLink,
+                        Zoom = confirmAppoint.First().MeetingLink
+                    };
+                    results.Add(getAppointments);
+                }
+                jsonResults = JsonConvert.SerializeObject(results);
+            }
+           return jsonResults;
         }
     }
 }
