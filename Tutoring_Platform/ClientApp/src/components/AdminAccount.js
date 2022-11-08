@@ -1,14 +1,19 @@
 ﻿import React, { Component } from 'react';
-import { Profile } from './Profile';
+import { useAuth0 }
+    from "@auth0/auth0-react";
 
-export class AdminAccount extends Component {
-    static displayName = AdminAccount.name;
-
-    render() {
-        return (
-            <div>
-                <Profile />
-            </div>
-        );
-    }
+export function AdminAccount() {
+    const { user, isAuthenticated } = useAuth0();
+    return (
+        <div>
+            < div className="row" >
+                <div className="col">
+                    <p>Name: { }</p>
+                    <p>Email: {user.email}</p>
+                    
+                </div>
+                
+            </ div >
+        </div>
+    );
 }

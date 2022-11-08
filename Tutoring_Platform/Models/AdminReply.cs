@@ -7,10 +7,10 @@ namespace Tutoring_Platform.Models
     {
         public int Id { get; set; }
         public int AdminId { get; set; }
-        public int UserId { get; set; }
+        public int QueryId { get; set; }
         public string Message { get; set; } = null!;
 
         public virtual User Admin { get; set; } = null!;
-        public virtual StudTutorInfo User { get; set; } = null!;
+        public virtual HelpQuery Query { get; set; } = null!;
     }
 }

@@ -14,6 +14,23 @@
         public string? UserId { get; set; }
         public string? Role { get; set; }
     }
+
+    public class TutorParam
+    {
+        public string? UserId { get; set; }
+        public string? Name { get; set; }
+        public string? Address { get; set; }
+        public string? City { get; set; }
+        public string? Postal { get; set; }
+        public string? Province { get; set; }
+        public string? School { get; set; }
+        public string? Field { get; set; }
+        public string? Program { get; set; }
+        public string? Semester { get; set; }
+        public string? Wage { get; set; }
+        public string[]? Subjects { get; set; }
+        public int[]? Days { get; set; }
+    }
     public class LookForTutorParam
     {
         public string? CourseName { get; set; }
@@ -95,5 +112,10 @@
         public string? Paypal { get; set; }
         public string? Zoom { get; set; }
     }
-
+    public class AskQuery
+    {
+        public string? UserId { get; set; }
+        public string? Query { get; set; }
+        public int? QueryId { get; set; }
+    }
 }

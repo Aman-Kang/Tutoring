@@ -8,13 +8,60 @@ using Microsoft.AspNetCore.Authorization;
 namespace Tutoring_Platform.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("admin")]
     public class AdminController : ControllerBase
     {
         private tutoringContext db;
         public AdminController(tutoringContext dbModel)
         {
             db = dbModel;
+        }
+        [Route("GetQueries")]
+        [HttpPost]
+        public string GetQueries([FromBody]string userId)
+        {
+            string jsonResults = "";
+            var queries = from hq in db.HelpQueries
+                              //where hq.responded == false
+                          select hq;
+            List<AskQuery> results = new List<AskQuery>();
+            if(queries.Count() > 0)
+            {
+                foreach(var query in queries)
+                {
+                    string getName = (from sti in db.StudTutorInfos
+                                  where sti.Id == query.UserId
+                                  select sti.User.Name).First();
+                    AskQuery askQuery = new AskQuery
+                    {
+                        UserId = getName,
+                        Query = query.Query,
+                        QueryId = query.Id
+                    };
+                    results.Add(askQuery);
+                }
+                jsonResults = JsonConvert.SerializeObject(results);
+            }
+            return jsonResults;
+        }
+
+        [Route("SendReply")]
+        [HttpPost]
+        public string SendReply([FromBody] AskQuery reply)
+        {
+            if(reply.UserId != null && reply.QueryId != null && reply.Query != null)
+            {
+                AdminReply adminReply = new AdminReply
+                {
+                    AdminId = Convert.ToInt32(reply.UserId),
+                    Message = reply.Query,
+                    QueryId = Convert.ToInt32(reply.QueryId)
+                };
+                db.AdminReplies.Add(adminReply);
+                db.SaveChanges();
+                return "Reply Sent!";
+            }
+            return "Reply could not be sent!";
         }
     }
 }

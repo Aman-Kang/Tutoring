@@ -242,5 +242,164 @@ namespace Tutoring_Platform.Controllers
             }
             return jsonResults;
         }
+
+        [Route("GetInfo")]
+        [HttpPost]
+        public string GetInfo([FromBody] string userId)
+        {
+            int user = Convert.ToInt32(userId);
+            string jsonResults = "";
+            List<TutorParam> results = new List<TutorParam>();
+            var tutor = (from ti in db.TutorInfos
+                        where ti.User.UserId == user
+                        select new { ti,ti.User, ti.User.User.Name, ti.User.User.Email}).ToArray();
+            if (tutor.Length > 0)
+            {
+                var tutorCourses = (from tc in db.TutorCourses
+                                    where tc.TutorId == tutor[0].ti.Id
+                                    select tc).ToArray();
+                string[] subjects = new string[3];
+                for(int i = 0; i < tutorCourses.Length && i < 3; i++)
+                {
+                    subjects[i] = tutorCourses[i].Course;
+                }
+                var daysAvail = (from da in db.DaysAvailables
+                                 where da.UserId == tutor[0].ti.Id
+                                 select da).ToArray();
+                int[] days = new int[7];
+                if(daysAvail.Length > 0)
+                {
+                    days[0] = daysAvail[0].Sunday;
+                    days[1] = daysAvail[0].Monday;
+                    days[2] = daysAvail[0].Tuesday;
+                    days[3] = daysAvail[0].Wednesday;
+                    days[4] = daysAvail[0].Thursday;
+                    days[5] = daysAvail[0].Friday;
+                    days[6] = daysAvail[0].Saturday;
+                }
+
+                TutorParam tutorObject = new TutorParam
+                {
+                    Name = tutor[0].Name,
+                    Address = tutor[0].User.Address,
+                    City = tutor[0].User.City,
+                    Postal = tutor[0].User.PostalCode,
+                    Province = tutor[0].User.Province,
+                    School = tutor[0].User.School,
+                    Field = tutor[0].User.StudyField,
+                    Program = tutor[0].User.Program,
+                    Semester = tutor[0].User.Semester.ToString(),
+                    Wage = tutor[0].ti.Wage.ToString(),
+                    Subjects=subjects,
+                    Days=days
+                };
+                results.Add(tutorObject);
+                jsonResults = JsonConvert.SerializeObject(results);
+            }
+            return jsonResults;
+        }
+
+        [Route("UpdateInfo")]
+        [HttpPost]
+        public string UpdateInfo([FromBody] TutorParam tutor)
+        {
+            try
+            {
+                if (tutor.UserId != null && tutor.Address != null && tutor.City != null && tutor.Postal != null &&
+                tutor.Province != null && tutor.School != null && tutor.Field != null && tutor.Program != null &&
+                tutor.Semester != null && tutor.Days != null && tutor.Subjects != null && tutor.Wage != null)
+                {
+                    IEnumerable<StudTutorInfo> getUser = from u in db.StudTutorInfos
+                                                         where u.UserId == Convert.ToInt32(tutor.UserId)
+                                                         select u;
+                    IEnumerable<TutorInfo> getTutor = from ti in db.TutorInfos
+                                                      where ti.UserId == getUser.First().Id
+                                                      select ti;
+                    foreach (StudTutorInfo user in getUser)
+                    {
+                        user.Address = tutor.Address;
+                        user.City = tutor.City;
+                        user.PostalCode = tutor.Postal;
+                        user.Program = tutor.Program;
+                        user.Province = tutor.Province;
+                        user.School = tutor.School;
+                        user.StudyField = tutor.Field;
+                        user.Semester = Convert.ToInt32(tutor.Semester);
+                    }
+                    db.SaveChanges();
+                    foreach (TutorInfo user in getTutor)
+                    {
+                        user.Wage = Convert.ToInt32(tutor.Wage);
+                        if (Convert.ToInt32(tutor.Semester) == 0)
+                        {
+                            user.Status = "Graduate";
+                        }
+                        else
+                        {
+                            user.Status = "Semester " + tutor.Semester + " student";
+                        }
+                        
+                    }
+                    db.SaveChanges();
+
+                    var getCourses = (from tc in db.TutorCourses
+                                      where tc.TutorId == getTutor.First().Id
+                                      select tc).ToArray();
+                    for(int i = 0; i < tutor.Subjects.Length; i++)
+                    {
+                        if(i < getCourses.Length)
+                        {
+                            getCourses[i].Course = tutor.Subjects[i];
+                        }
+                        else
+                        {
+                            TutorCourse tutorCourse = new TutorCourse
+                            {
+                                TutorId = getTutor.First().Id,
+                                Course = tutor.Subjects[i]
+                            };
+                            db.TutorCourses.Add(tutorCourse);
+                        }
+                    }
+                    db.SaveChanges();
+                    var getDays = (from da in db.DaysAvailables
+                                   where da.UserId == getTutor.First().Id
+                                   select da).ToArray();
+                    if(getDays.Length > 0)
+                    {
+                       foreach(DaysAvailable day in getDays)
+                        {
+                            day.Sunday = tutor.Days[0];
+                            day.Monday = tutor.Days[1];
+                            day.Tuesday = tutor.Days[2];
+                            day.Wednesday = tutor.Days[3];
+                            day.Thursday = tutor.Days[4];
+                            day.Friday = tutor.Days[5];
+                            day.Saturday = tutor.Days[6];
+                        }
+                    }
+                    else
+                    {
+                        DaysAvailable day = new DaysAvailable
+                        {
+                            UserId = getTutor.First().Id,
+                            Sunday = tutor.Days[0],
+                            Monday = tutor.Days[1],
+                            Tuesday = tutor.Days[2],
+                            Wednesday = tutor.Days[3],
+                            Thursday = tutor.Days[4],
+                            Friday = tutor.Days[5],
+                            Saturday = tutor.Days[6]
+                        };
+                        db.DaysAvailables.Add(day);
+                    }
+                    db.SaveChanges();
+                    return "Profile Updated";
+                                        
+                }
+            }
+            catch { }
+            return "Profile could not be updated!";
+        }
     }
 }

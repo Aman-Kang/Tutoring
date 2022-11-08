@@ -1,6 +1,6 @@
 ﻿import React from 'react';
 import { CustomAccordion } from './CustomAccordion';
-import { useState } from 'react';
+import { useEffect,useState } from 'react';
 import { useAuth0 }
     from "@auth0/auth0-react";
 export function StudentAppointments(){
@@ -49,11 +49,15 @@ export function StudentAppointments(){
                 console.log(data);
             });
     }
+    useEffect(() => {
+        getAppointments();
+        displayRequests();
+    }, []);
     return (
         <div>
             <p>You cannot attend any calss without making the payment to the tutor. Pay the tutor an hour before the session otherwise the tutor will not be coming to the session.</p>
             <h3>Upcoming Appointments</h3>
-            {getAppointments()}
+            
             {appointments.map((a, index) =>
                 <div key={index}>
                     <CustomAccordion title={a.Date}
@@ -70,7 +74,7 @@ export function StudentAppointments(){
             )
             }
             <h3>Appointment Request By Tutor</h3>
-            {displayRequests()}
+            
             {requests.map((r, index) =>
                 <div key={index}>
                     <CustomAccordion title={r.Name}

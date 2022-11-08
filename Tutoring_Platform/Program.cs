@@ -31,7 +31,7 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();*/
 
 builder.Services.AddDbContext<tutoringContext>(options =>
-                options.UseSqlServer("Data Source=tutoringplatform-199.database.windows.net,1433;Initial Catalog=tutoring;User ID=amandeep_kaur;Password=Aman543!"));
+                options.UseSqlServer("Data Source=tutoringplatform-199.database.windows.net,1433;Initial Catalog=tutoring;User ID=amandeep_kaur;Password=Aman543!;MultipleActiveResultSets=true"));
 builder.Services.AddControllers();
 
 var app = builder.Build();

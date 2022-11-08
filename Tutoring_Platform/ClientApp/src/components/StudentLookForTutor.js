@@ -1,10 +1,18 @@
 ﻿import React, { Component } from 'react';
 import { useState } from 'react';
+import { Collapse, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink } from 'reactstrap';
 import { CustomAccordion } from './CustomAccordion';
+import { Popup } from './Popup';
 import { useAuth0 }
     from "@auth0/auth0-react";
 
+
 export function StudentLookForTutor() {
+    const [isOpen, setIsOpen] = useState(false);
+
+    const togglePopup = () => {
+        setIsOpen(!isOpen);
+    }
     const { user, isAuthenticated } = useAuth0();
     const [courseName, setCourseName] = useState("");
     const [sunday, setSunday] = useState(0);
@@ -166,10 +174,22 @@ export function StudentLookForTutor() {
                     <p>Program</p>
                     <p></p>
                 </div>
+                
                 <div>
                     {tutors.map((t, index) =>
                         <div key={index}>
-                            <CustomAccordion title={t.Name}
+                            <CustomAccordion title={
+                                <div>
+                                    <NavLink onClick={togglePopup}>
+                                        {t.Name}
+                                    </NavLink>
+                                    {isOpen && <Popup
+                                        userId={t.tutorId}
+                                        role={"tutor"}
+                                        handleClose={togglePopup}
+                                    />}
+                                </div>
+                            }
                                 content={
                                     <div>
                                         <p>School {t.School}</p>

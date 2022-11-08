@@ -1,5 +1,5 @@
 ﻿import React from 'react';
-import { useState } from 'react';
+import {useEffect, useState } from 'react';
 import { useAuth0 }
     from "@auth0/auth0-react";
 import { CustomAccordion } from './CustomAccordion';
@@ -60,11 +60,13 @@ export function TutorMessageRequests(){
                 console.log(data);
             });
     }
-    
+    useEffect(() => {
+        displayRequests();
+    }, []);
     return (
         <div>
             <h3>List of Students</h3>
-            {displayRequests()}
+            
             <div>
                 {
                     requests.map((r, index) => 

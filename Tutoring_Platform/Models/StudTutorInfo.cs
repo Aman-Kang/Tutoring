@@ -7,7 +7,6 @@ namespace Tutoring_Platform.Models
     {
         public StudTutorInfo()
         {
-            AdminReplies = new HashSet<AdminReply>();
             AppointRequests = new HashSet<AppointRequest>();
             HelpQueries = new HashSet<HelpQuery>();
             ReportAccounts = new HashSet<ReportAccount>();
@@ -27,7 +26,6 @@ namespace Tutoring_Platform.Models
         public int? Semester { get; set; }
 
         public virtual User User { get; set; } = null!;
-        public virtual ICollection<AdminReply> AdminReplies { get; set; }
         public virtual ICollection<AppointRequest> AppointRequests { get; set; }
         public virtual ICollection<HelpQuery> HelpQueries { get; set; }
         public virtual ICollection<ReportAccount> ReportAccounts { get; set; }

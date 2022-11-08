@@ -31,7 +31,11 @@ namespace Tutoring_Platform.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            
+            if (!optionsBuilder.IsConfigured)
+            {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                optionsBuilder.UseSqlServer("Data Source=tutoringplatform-199.database.windows.net,1433;Initial Catalog=tutoring;User ID=amandeep_kaur;Password=Aman543!;MultipleActiveResultSets=true");
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -42,7 +46,7 @@ namespace Tutoring_Platform.Models
 
                 entity.HasIndex(e => e.AdminId, "IX_admin_replies_admin_id");
 
-                entity.HasIndex(e => e.UserId, "IX_admin_replies_user_id");
+                entity.HasIndex(e => e.QueryId, "IX_admin_replies_user_id");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
@@ -52,7 +56,7 @@ namespace Tutoring_Platform.Models
                     .IsUnicode(false)
                     .HasColumnName("message");
 
-                entity.Property(e => e.UserId).HasColumnName("user_id");
+                entity.Property(e => e.QueryId).HasColumnName("query_id");
 
                 entity.HasOne(d => d.Admin)
                     .WithMany(p => p.AdminReplies)
@@ -60,11 +64,11 @@ namespace Tutoring_Platform.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_admin_replies_user");
 
-                entity.HasOne(d => d.User)
+                entity.HasOne(d => d.Query)
                     .WithMany(p => p.AdminReplies)
-                    .HasForeignKey(d => d.UserId)
+                    .HasForeignKey(d => d.QueryId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_admin_replies_stud_tutor_info");
+                    .HasConstraintName("FK_admin_replies_help_queries");
             });
 
             modelBuilder.Entity<AppointConfirm>(entity =>
