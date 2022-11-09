@@ -1,13 +1,13 @@
-﻿import React, { Component } from 'react';
+﻿import React from 'react';
 
-export class AdminCheckStats extends Component {
-    static displayName = AdminCheckStats.name;
+export function AdminCheckStats(){
 
-    render() {
-        return (
-            <div>
-                <h4>Number of users</h4>
-            </div>
-        );
-    }
+    return (
+        <div>
+            <p>Number of Users: { }</p>
+            <p>Number of Tutors: { }</p>
+            <p>Number of Students: { }</p>
+        </div>
+    );
+    
 }

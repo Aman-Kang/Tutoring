@@ -112,6 +112,8 @@ export function TutorMessageRequests(){
                                         <p><input type="datetime-local" value={slot3} onChange={timeSlot3Changed} min="2022-01-01T00:00" max="2023-12-31T00:00" /></p>
                                         <p><input type="datetime-local" value={slot4} onChange={timeSlot4Changed} min="2022-01-01T00:00" max="2023-12-31T00:00" /></p>
                                         <p><input type="datetime-local" value={slot5} onChange={timeSlot5Changed} min="2022-01-01T00:00" max="2023-12-31T00:00" /></p>
+                                        <p>Enter a message for student: </p>
+                                        <input type="text" value={ } onChange={ } />
                                         <button onClick={(e) => sendTimeSlots(r.Id, slot1, slot2, slot3, slot4, slot5, e)}>Send Time Slots to Student</button>
                                         <h5>{errorMessage}</h5>
                                         

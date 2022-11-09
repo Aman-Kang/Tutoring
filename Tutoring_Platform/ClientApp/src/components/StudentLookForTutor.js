@@ -209,6 +209,8 @@ export function StudentLookForTutor() {
                                         <p>School {t.School}</p>
                                         <p>Status {t.Status}</p>
                                         <p>Wage {t.Wage}</p>
+                                        <p>Enter a message for tutor: </p>
+                                        <input type="text" value={ } onChange={ } />
                                         <button onClick={(e) => sendTutorRequest(t.CourseName, t.Days, t.tutorId, t.studId, e)}>Send Tutor Request</button>
                                         <button onClick={(e) => reportUser(t.tutorId, e)}>Report User</button>
                                     </div>
