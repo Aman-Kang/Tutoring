@@ -6,6 +6,7 @@ import { CustomAccordion } from './CustomAccordion';
 
 export function TutorAppointments(){
     const { user, isAuthenticated } = useAuth0();
+    const [errorMessage, setError] = useState("");
     const [appointments, setAppointments] = useState([]);
     const [paypal, setPaypal] = useState("");
     const [zoom, setZoom] = useState("");
@@ -20,7 +21,7 @@ export function TutorAppointments(){
             body: JSON.stringify(user.sub.substring(6))
         }).then(res => res.json())
             .then(data => {
-                setAppointments(data);
+                if (data != "") setAppointments(data);
             });
     }
 
@@ -32,21 +33,28 @@ export function TutorAppointments(){
     }
 
     function confirmAppoint(slotId) {
-        console.log(slotId);
-        fetch('tutor/AddToAppoints', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                slotId: slotId,
-                paypal: paypal,
-                zoom:zoom
-            })
-        }).then(res => res.text())
-            .then(data => {
-                console.log(data);
-            });
+        if (paypal != "" && zoom != "") {
+            setError("");
+            fetch('tutor/AddToAppoints', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    slotId: slotId,
+                    paypal: paypal,
+                    zoom: zoom
+                })
+            }).then(res => res.text())
+                .then(data => {
+                    console.log(data);
+                    setPaypal("");
+                    setZoom("");
+                });
+        } else {
+            setError("All fields should be filled in to submit the request!")
+        }
+        
     }
     const getAppointments = () => {
         fetch('tutor/GetAppointments', {
@@ -57,7 +65,7 @@ export function TutorAppointments(){
             body: JSON.stringify(user.sub.substring(6))
         }).then(res => res.json())
             .then(data => {
-                setAppointmentsA(data);
+                if (data != "") setAppointmentsA(data);
             });
     }
     useEffect(() => {
@@ -93,8 +101,8 @@ export function TutorAppointments(){
                                     <p>Date and Time: {a.Slot}</p>
                                     <p>Enter Paypal link: <input type="text" value={paypal} onChange={paypalChange} /></p>
                                     <p>Enter Zoom link: <input type="text" value={zoom} onChange={zoomChange} /></p>
-                                    {console.log(a.Id )}
                                     <button onClick={(e) => confirmAppoint(a.Id, e)}>Add to upcoming appointments</button>
+                                    <h5>{errorMessage}</h5>
                                 </div>
 
                             } />

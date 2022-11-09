@@ -1,20 +1,15 @@
 ﻿import React, { Component } from 'react';
 import { useState } from 'react';
-import { Collapse, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink } from 'reactstrap';
 import { CustomAccordion } from './CustomAccordion';
-import { Popup } from './Popup';
 import { useAuth0 }
     from "@auth0/auth0-react";
 
 
 export function StudentLookForTutor() {
-    const [isOpen, setIsOpen] = useState(false);
 
-    const togglePopup = () => {
-        setIsOpen(!isOpen);
-    }
     const { user, isAuthenticated } = useAuth0();
     const [courseName, setCourseName] = useState("");
+    const [errorMessage, setError] = useState("");
     const [sunday, setSunday] = useState(0);
     const [monday, setMonday] = useState(0);
     const [tuesday, setTuesday] = useState(0);
@@ -93,10 +88,16 @@ export function StudentLookForTutor() {
     }
     const onSubmit=(e)=>{
         e.preventDefault();
-        searchForTutors();
+        if (courseName != "") {
+            searchForTutors();
+        }
+        else {
+            setError("All fields should be filled in to submit the request!")
+        }
     }
 
-    const searchForTutors=()=>{
+    const searchForTutors = () => {
+        setError("");
         fetch('student/SearchTutors', {
             method: 'POST',
             headers: {
@@ -109,12 +110,19 @@ export function StudentLookForTutor() {
             })
         }).then(res => res.json())
             .then(data => {
-                setTutors(data);
-        });
+                if (data != "") setTutors(data);
+                setCourseName("");
+                setSunday(0);
+                setMonday(0);
+                setTuesday(0);
+                setWednesday(0);
+                setThursday(0);
+                setFriday(0);
+                setSaturday(0);
+            });
     }
 
     function sendTutorRequest(courseName, days, tutorId, studId) {
-        console.log(courseName + ", " + days + ", " + tutorId + ", " + studId)
         fetch('student/SendTutorRequest', {
             method: 'POST',
             headers: {
@@ -131,7 +139,21 @@ export function StudentLookForTutor() {
                 console.log(data);
             });
     }
-
+    function reportUser(tutorId) {
+        fetch('student/ReportUser', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                userId: user.sub.substring(6),
+                accountId: tutorId
+            })
+        }).then(res => res.text())
+            .then(data => {
+                console.log(data);
+            });
+    }
     return (
         <div>
             <p>Enter the below mentioned details so that we can find you a prefect tutor!</p>
@@ -141,6 +163,9 @@ export function StudentLookForTutor() {
                         <p>Program Course in which you need help (Write the full name of the course)</p>
                         <p><input type="text" value={courseName} onChange={courseNameChange }/></p>
                         <button>Submit</button>
+                        <div className="row">
+                            <h5>{errorMessage}</h5>
+                        </div>
                     </div>
                     <div className="col-6">
                         <p>What days of the week you want the tutoring sessions:</p>
@@ -178,28 +203,18 @@ export function StudentLookForTutor() {
                 <div>
                     {tutors.map((t, index) =>
                         <div key={index}>
-                            <CustomAccordion title={
-                                <div>
-                                    <NavLink onClick={togglePopup}>
-                                        {t.Name}
-                                    </NavLink>
-                                    {isOpen && <Popup
-                                        userId={t.tutorId}
-                                        role={"tutor"}
-                                        handleClose={togglePopup}
-                                    />}
-                                </div>
-                            }
+                            <CustomAccordion title={t.Name}
                                 content={
                                     <div>
                                         <p>School {t.School}</p>
                                         <p>Status {t.Status}</p>
                                         <p>Wage {t.Wage}</p>
-                                        
+                                        <button onClick={(e) => sendTutorRequest(t.CourseName, t.Days, t.tutorId, t.studId, e)}>Send Tutor Request</button>
+                                        <button onClick={(e) => reportUser(t.tutorId, e)}>Report User</button>
                                     </div>
                                 } />
                             <br />
-                            <button onClick={(e) => sendTutorRequest(t.CourseName, t.Days, t.tutorId, t.studId,e)}>Send Tutor Request</button>
+                            
                         </div>
                     )
                     }

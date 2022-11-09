@@ -5,6 +5,7 @@ import {useEffect, useState } from 'react';
 
 export function TutorAccount() {
     const { user, isAuthenticated } = useAuth0();
+    const [errorMessage, setError] = useState("");
     const [name, setName] = useState("");
     const [address, setAddress] = useState("");
     const [city, setCity] = useState("");
@@ -41,26 +42,28 @@ export function TutorAccount() {
             body: JSON.stringify(user.sub.substring(6))
         }).then(res => res.json())
             .then(data => {
-                setName(data[0].Name);
-                setAddress(data[0].Address);
-                setCity(data[0].City);
-                setPostal(data[0].Postal);
-                setProvince(data[0].Province);
-                setSchool(data[0].School);
-                setField(data[0].Field);
-                setProgram(data[0].Program);
-                setSemester(data[0].Semester);
-                setWage(data[0].Wage);
-                setSubject1(data[0].Subjects[0]);
-                setSubject2(data[0].Subjects[1]);
-                setSubject3(data[0].Subjects[2]);
-                setSunday(data[0].Days[0]);
-                setMonday(data[0].Days[1]);
-                setTuesday(data[0].Days[2]);
-                setWednesday(data[0].Days[3]);
-                setThursday(data[0].Days[4]);
-                setFriday(data[0].Days[5]);
-                setSaturday(data[0].Days[6]);
+                if (data != "") {
+                    setName(data[0].Name);
+                    setAddress(data[0].Address);
+                    setCity(data[0].City);
+                    setPostal(data[0].Postal);
+                    setProvince(data[0].Province);
+                    setSchool(data[0].School);
+                    setField(data[0].Field);
+                    setProgram(data[0].Program);
+                    setSemester(data[0].Semester);
+                    setWage(data[0].Wage);
+                    setSubject1(data[0].Subjects[0]);
+                    setSubject2(data[0].Subjects[1]);
+                    setSubject3(data[0].Subjects[2]);
+                    setSunday(data[0].Days[0]);
+                    setMonday(data[0].Days[1]);
+                    setTuesday(data[0].Days[2]);
+                    setWednesday(data[0].Days[3]);
+                    setThursday(data[0].Days[4]);
+                    setFriday(data[0].Days[5]);
+                    setSaturday(data[0].Days[6]);
+                }
             });
     }
     const addressChange = (e) => {
@@ -165,29 +168,37 @@ export function TutorAccount() {
     }
 
     const updateInfo = () => {
-        fetch('tutor/UpdateInfo', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                userId: user.sub.substring(6),
-                address: address,
-                city: city,
-                postal: postal,
-                province: province,
-                school: school,
-                program: program,
-                field: field,
-                semester: semester,
-                wage: wage,
-                subjects: [ subject1, subject2, subject3 ],
-                days: [ sunday, monday, tuesday, wednesday, thursday, friday, saturday ]
-            })
-        }).then(res => res.text())
-            .then(data => {
-                console.log(data);
-            });
+        if (address != "" && city != "" && postal != "" && province != "" && school != "" &&
+            program != "" && field != "" && wage != 0 && (subject1 != "" || subject2 != "" || subject3 != "")) {
+            setError("");
+            fetch('tutor/UpdateInfo', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: user.sub.substring(6),
+                    address: address,
+                    city: city,
+                    postal: postal,
+                    province: province,
+                    school: school,
+                    program: program,
+                    field: field,
+                    semester: semester,
+                    wage: wage,
+                    subjects: [subject1, subject2, subject3],
+                    days: [sunday, monday, tuesday, wednesday, thursday, friday, saturday]
+                })
+            }).then(res => res.text())
+                .then(data => {
+                    console.log(data);
+                    
+                });
+        } else {
+            setError("All fields should be filled in to submit the request!")
+        }
+        
     }
     return (
         <div>
@@ -222,6 +233,9 @@ export function TutorAccount() {
             </ div >
             <div className="row">
                 <button onClick={updateInfo}>Update</button>
+            </div>
+            <div className="row">
+                <h5>{errorMessage}</h5>
             </div>
         </div>
     );

@@ -59,6 +59,7 @@
     public class DisplayRequestsReturn
     {
         public int? Id { get; set; }
+        public int? StudId { get; set; }
         public string? CourseName { get; set; }
         public int[]? Days { get; set; }
         public string? Name { get; set; }
@@ -118,4 +119,18 @@
         public string? Query { get; set; }
         public int? QueryId { get; set; }
     }
+
+    public class ReportAccountRequest
+    {
+        public int? UserId { get; set; }
+        public int? AccountId { get; set; }
+    }
+
+    public class GetReportAccount
+    {
+        public string? Name { get; set; }
+        public string? By { get; set; }
+        public int? AccountId { get; set; }
+    }
+
 }

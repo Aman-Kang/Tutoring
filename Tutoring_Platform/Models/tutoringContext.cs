@@ -33,8 +33,6 @@ namespace Tutoring_Platform.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Data Source=tutoringplatform-199.database.windows.net,1433;Initial Catalog=tutoring;User ID=amandeep_kaur;Password=Aman543!;MultipleActiveResultSets=true");
             }
         }
 
@@ -229,6 +227,12 @@ namespace Tutoring_Platform.Models
                 entity.Property(e => e.AccountId).HasColumnName("account_id");
 
                 entity.Property(e => e.UserId).HasColumnName("user_id");
+
+                entity.HasOne(d => d.Account)
+                    .WithMany(p => p.ReportAccounts)
+                    .HasForeignKey(d => d.AccountId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_report_account_user");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.ReportAccounts)

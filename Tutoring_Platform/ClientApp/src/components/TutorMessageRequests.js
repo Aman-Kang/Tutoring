@@ -7,6 +7,7 @@ import { CustomAccordion } from './CustomAccordion';
 export function TutorMessageRequests(){
     const { user, isAuthenticated } = useAuth0();
     const [requests, setRequests] = useState([]);
+    const [errorMessage, setError] = useState("");
     const [slot1, setSlot1] = useState("");
     const [slot2, setSlot2] = useState("");
     const [slot3, setSlot3] = useState("");
@@ -22,7 +23,7 @@ export function TutorMessageRequests(){
             body: JSON.stringify(user.sub.substring(6))
         }).then(res => res.json())
             .then(data => {
-                setRequests(data);
+                if (data != "") setRequests(data);
             });
     }
     const timeSlot1Changed = (e) => {
@@ -40,29 +41,55 @@ export function TutorMessageRequests(){
     const timeSlot5Changed = (e) => {
         setSlot5(e.target.value);
     }
-    function sendTimeSlots(id, slot1,slot2,slot3,slot4,slot5){
-        console.log(id +", "+slot1 + ", " + slot2 + ", " + slot3 + ", " + slot4 + ", " + slot5);
-        fetch('tutor/SendAppointSlots', {
+    function sendTimeSlots(id, slot1, slot2, slot3, slot4, slot5) {
+        if (slot1 != "" && slot2 != "" && slot3 != "" && slot4 != "" && slot5 != "") {
+            setError("");
+            fetch('tutor/SendAppointSlots', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    requestId: id,
+                    slot1: slot1,
+                    slot2: slot2,
+                    slot3: slot3,
+                    slot4: slot4,
+                    slot5: slot5
+                })
+            }).then(res => res.text())
+                .then(data => {
+                    console.log(data);
+                    setSlot1("");
+                    setSlot2("");
+                    setSlot3("");
+                    setSlot4("");
+                    setSlot5("");
+                });
+        } else {
+            setError("All fields should be filled in to submit the request!")
+        }
+        
+    }
+    useEffect(() => {
+        displayRequests();
+    }, []);
+
+    function reportUser(studId) {
+        fetch('tutor/ReportUser', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                requestId: id,
-                slot1: slot1,
-                slot2: slot2,
-                slot3: slot3,
-                slot4: slot4,
-                slot5:slot5
+                userId: user.sub.substring(6),
+                accountId: studId
             })
         }).then(res => res.text())
             .then(data => {
                 console.log(data);
             });
     }
-    useEffect(() => {
-        displayRequests();
-    }, []);
     return (
         <div>
             <h3>List of Students</h3>
@@ -74,20 +101,25 @@ export function TutorMessageRequests(){
                             <CustomAccordion title={r.Name}
                                 content={
                                     <div>
-                                        <p>School {r.School}</p>
-                                        <p>Program {r.Program}</p>
-                                        <p>Semester {r.Semester}</p>
-                                        <p>Course Name {r.CourseName}</p>
-                                        <p>Days</p>
+                                        <p>School - {r.School}</p>
+                                        <p>Program - {r.Program}</p>
+                                        <p>Semester - {r.Semester}</p>
+                                        <p>Course Name - {r.CourseName}</p>
+                                        <p>Days - {}</p>
+
+                                        <p><input type="datetime-local" value={slot1} onChange={timeSlot1Changed} min="2022-01-01T00:00" max="2023-12-31T00:00" /></p>
+                                        <p><input type="datetime-local" value={slot2} onChange={timeSlot2Changed} min="2022-01-01T00:00" max="2023-12-31T00:00" /></p>
+                                        <p><input type="datetime-local" value={slot3} onChange={timeSlot3Changed} min="2022-01-01T00:00" max="2023-12-31T00:00" /></p>
+                                        <p><input type="datetime-local" value={slot4} onChange={timeSlot4Changed} min="2022-01-01T00:00" max="2023-12-31T00:00" /></p>
+                                        <p><input type="datetime-local" value={slot5} onChange={timeSlot5Changed} min="2022-01-01T00:00" max="2023-12-31T00:00" /></p>
+                                        <button onClick={(e) => sendTimeSlots(r.Id, slot1, slot2, slot3, slot4, slot5, e)}>Send Time Slots to Student</button>
+                                        <h5>{errorMessage}</h5>
+                                        
+                                        <button onClick={(e) => reportUser(r.StudId, e) }>Report User</button>
                                     </div>
                                 } />
                             <br />
-                            <p><input type="datetime-local" value={slot1} onChange={timeSlot1Changed} min="2022-01-01T00:00" max="2023-12-31T00:00" /></p>
-                            <p><input type="datetime-local" value={slot2} onChange={timeSlot2Changed} min="2022-01-01T00:00" max="2023-12-31T00:00" /></p>
-                            <p><input type="datetime-local" value={slot3} onChange={timeSlot3Changed} min="2022-01-01T00:00" max="2023-12-31T00:00" /></p>
-                            <p><input type="datetime-local" value={slot4} onChange={timeSlot4Changed} min="2022-01-01T00:00" max="2023-12-31T00:00" /></p>
-                            <p><input type="datetime-local" value={slot5} onChange={timeSlot5Changed} min="2022-01-01T00:00" max="2023-12-31T00:00" /></p>
-                            <button onClick={(e) => sendTimeSlots(r.Id,slot1,slot2,slot3,slot4,slot5,e)}>Send Time Slots to Student</button>
+                            
                         </div>
                     )
                 }

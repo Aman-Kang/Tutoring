@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 
 export function StudentAccount() {
     const { user, isAuthenticated } = useAuth0();
+    const [errorMessage, setError] = useState("");
     const [name, setName] = useState("");
     const [address, setAddress] = useState("");
     const [city, setCity] = useState("");
@@ -26,15 +27,18 @@ export function StudentAccount() {
             body: JSON.stringify(user.sub.substring(6))
         }).then(res => res.json())
             .then(data => {
-                setName(data[0].Name);
-                setAddress(data[0].Address);
-                setCity(data[0].City);
-                setPostal(data[0].Postal);
-                setProvince(data[0].Province);
-                setSchool(data[0].School);
-                setField(data[0].Field);
-                setProgram(data[0].Program);
-                setSemester(data[0].Semester);
+                if (data != "") {
+                    setName(data[0].Name);
+                    setAddress(data[0].Address);
+                    setCity(data[0].City);
+                    setPostal(data[0].Postal);
+                    setProvince(data[0].Province);
+                    setSchool(data[0].School);
+                    setField(data[0].Field);
+                    setProgram(data[0].Program);
+                    setSemester(data[0].Semester);
+                }
+                
             });
     }
     const addressChange = (e) => {
@@ -62,26 +66,33 @@ export function StudentAccount() {
         setSemester(e.target.value);
     }
     const updateInfo = () => {
-        fetch('student/UpdateInfo', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                userId: user.sub.substring(6),
-                address: address,
-                city: city,
-                postal: postal,
-                province: province,
-                school: school,
-                program: program,
-                field: field,
-                semester: semester
-            })
-        }).then(res => res.text())
-            .then(data => {
-                console.log(data);
-            });
+        if (address != "" && city != "" && postal != "" && province != "" && school != "" &&
+            program != "" && field != "") {
+            setError("");
+            fetch('student/UpdateInfo', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: user.sub.substring(6),
+                    address: address,
+                    city: city,
+                    postal: postal,
+                    province: province,
+                    school: school,
+                    program: program,
+                    field: field,
+                    semester: semester
+                })
+            }).then(res => res.text())
+                .then(data => {
+                    console.log(data);
+                });
+        } else {
+            setError("All fields should be filled in to submit the request!")
+        }
+        
     }
     return (
         <div>
@@ -103,6 +114,7 @@ export function StudentAccount() {
             </ div >
             <div className="row">
                 <button onClick={updateInfo}>Update</button>
+                <h5>{errorMessage}</h5>
             </div>
         </div>
     );

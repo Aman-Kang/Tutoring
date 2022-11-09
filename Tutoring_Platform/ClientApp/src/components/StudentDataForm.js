@@ -7,6 +7,7 @@ import { useState } from 'react';
 export function StudentDataForm(props) {
     const { user, isAuthenticated } = useAuth0();
     const [name, setName] = useState("");
+    const [errorMessage, setError] = useState("");
     const [address, setAddress] = useState("");
     const [city, setCity] = useState("");
     const [postal, setPostal] = useState("");
@@ -46,10 +47,17 @@ export function StudentDataForm(props) {
 
     const submitForm = (e) => {
         e.preventDefault();
-        createStudent();
+        if (name != "" && address != "" && city != "" && province != "" && school != "" &&
+            field != "" && program != "") {
+            createStudent();
+        }
+        else {
+            setError("All fields should be filled in to submit the profile data!")
+        }
     }
 
     const createStudent = () => {
+        setError("");
         fetch('student/CreateStudent', {
             method: 'POST',
             headers: {
@@ -97,6 +105,9 @@ export function StudentDataForm(props) {
                 </div>
                 <div className="row">
                     <button>Submit</button>
+                </div>
+                <div className="row">
+                    <h5>{ errorMessage }</h5>
                 </div>
             </form>
         </div>

@@ -6,6 +6,7 @@ import { useAuth0 }
 export function StudentAppointments(){
     const { user, isAuthenticated } = useAuth0();
     const [requests, setRequests] = useState([]);
+    const [errorMessage, setError] = useState("");
     const [slot, setSlot] = useState("");
     const [appointments, setAppointments] = useState([]);
     const displayRequests = () => {
@@ -17,7 +18,8 @@ export function StudentAppointments(){
             body: JSON.stringify(user.sub.substring(6))
         }).then(res => res.json())
             .then(data => {
-                setRequests(data);
+                if (data != "")setRequests(data);
+                
             });
     }
 
@@ -34,20 +36,26 @@ export function StudentAppointments(){
             body: JSON.stringify(user.sub.substring(6))
         }).then(res => res.json())
             .then(data => {
-                setAppointments(data);
+                if (data != "") setAppointments(data);
             });
     }
     const sendConfirmedSlot = () => {
-        fetch('student/SendConfirmedSlot', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(slot)
-        }).then(res => res.text())
-            .then(data => {
-                console.log(data);
-            });
+        if (slot != "") {
+            setError("");
+            fetch('student/SendConfirmedSlot', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(slot)
+            }).then(res => res.text())
+                .then(data => {
+                    console.log(data);
+                });
+        } else {
+            setError("A slot must be selected in order to submit it!")
+        }
+        
     }
     useEffect(() => {
         getAppointments();
@@ -88,8 +96,8 @@ export function StudentAppointments(){
                                 <p><input type="radio" value={r.Id3} onChange={slotChanged} checked={slot == r.Id3} /> {r.Slot3}</p>
                                 <p><input type="radio" value={r.Id4} onChange={slotChanged} checked={slot == r.Id4} /> {r.Slot4}</p>
                                 <p><input type="radio" value={r.Id5} onChange={slotChanged} checked={slot == r.Id5} /> {r.Slot5}</p>
-                                <button onClick={sendConfirmedSlot}>Send Time Slots to Student</button>
-
+                                <button onClick={sendConfirmedSlot}>Send Time Slot to Tutor</button>
+                                <h5>{errorMessage}</h5>
                             </div>
                         } />
                     <br />

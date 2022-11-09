@@ -7,6 +7,7 @@ import { useAuth0 }
 
 export function AdminUserMsg(){
     const { user, isAuthenticated } = useAuth0();
+    const [errorMessage, setError] = useState("");
     const [queries, setQueries] = useState([]);
     const [reply, setReply] = useState([]);
 
@@ -22,27 +23,34 @@ export function AdminUserMsg(){
             body: JSON.stringify(user.sub.substring(6))
         }).then(res => res.json())
             .then(data => {
-                setQueries(data);
+                if (data != "") setQueries(data);
             });
     }
     const replyChange = (e) => {
         setReply(e.target.value);
     }
-    function sendReply(queryId){
-        fetch('admin/SendReply', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                queryId: queryId,
-                userId: user.sub.substring(6),
-                query:reply
-            })
-        }).then(res => res.text())
-            .then(data => {
-                console.log(data);
-            });
+    function sendReply(queryId) {
+        if (reply != "") {
+            setError("");
+            fetch('admin/SendReply', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    queryId: queryId,
+                    userId: user.sub.substring(6),
+                    query: reply
+                })
+            }).then(res => res.text())
+                .then(data => {
+                    console.log(data);
+                    setReply("");
+                });
+        } else {
+            setError("The reply must be entered before submitting!")
+        }
+        
     }
     return (
         <div>
@@ -59,7 +67,8 @@ export function AdminUserMsg(){
                                     rows={5}
                                     cols={50}
                                 /></p>
-                                <button onClick={(e) => sendReply(q.QueryId,e)}>Send a Reply</button>
+                                <button onClick={(e) => sendReply(q.QueryId, e)}>Send a Reply</button>
+                                <h5>{errorMessage}</h5>
                             </div>
                         } />
                     <br />

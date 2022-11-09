@@ -8,6 +8,7 @@ namespace Tutoring_Platform.Models
         public User()
         {
             AdminReplies = new HashSet<AdminReply>();
+            ReportAccounts = new HashSet<ReportAccount>();
             Statistics = new HashSet<Statistic>();
             StudTutorInfos = new HashSet<StudTutorInfo>();
         }
@@ -19,6 +20,7 @@ namespace Tutoring_Platform.Models
         public string? Name { get; set; }
 
         public virtual ICollection<AdminReply> AdminReplies { get; set; }
+        public virtual ICollection<ReportAccount> ReportAccounts { get; set; }
         public virtual ICollection<Statistic> Statistics { get; set; }
         public virtual ICollection<StudTutorInfo> StudTutorInfos { get; set; }
     }

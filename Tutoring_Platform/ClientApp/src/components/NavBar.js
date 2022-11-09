@@ -47,7 +47,7 @@ export function NavBar(){
             body: JSON.stringify(user.email)
         }).then(res => res.text())
             .then(data => {
-                setRole(data);
+                if (data != "") setRole(data);
             });
     }
 
@@ -60,7 +60,7 @@ export function NavBar(){
             body: JSON.stringify(user.sub.substring(6))
         }).then(res => res.text())
             .then(data => {
-                setShowDialog(data);
+                if (data != "") setShowDialog(data);
             });
     }
     
