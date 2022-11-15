@@ -21,6 +21,7 @@ namespace Tutoring_Platform.Models
         public int? Thursday { get; set; }
         public int? Friday { get; set; }
         public int? Saturday { get; set; }
+        public string? Message { get; set; }
 
         public virtual StudTutorInfo Stud { get; set; } = null!;
         public virtual TutorInfo Tutor { get; set; } = null!;

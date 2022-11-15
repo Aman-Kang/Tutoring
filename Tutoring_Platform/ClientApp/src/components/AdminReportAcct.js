@@ -6,13 +6,14 @@ import { CustomAccordion } from './CustomAccordion';
 
 export function AdminReportAcct(){
     const { user, isAuthenticated } = useAuth0();
+    const [error, setError] = useState("");
     const [accounts, setAccounts] = useState([]);
     useEffect(() => {
         getReportedAcc();
     }, []);
 
     const getReportedAcc = () => {
-        fetch('student/GetReportedAcc', {
+        fetch('admin/GetReportedAcc', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -24,7 +25,7 @@ export function AdminReportAcct(){
             });
     }
     function deleteUser(accountId) {
-        fetch('student/DeleteUser', {
+        fetch('admin/DeleteUser', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -32,19 +33,20 @@ export function AdminReportAcct(){
             body: JSON.stringify({ accountId:accountId })
         }).then(res => res.text())
             .then(data => {
-                console.log(data);
+                setError(data);
             });
     }
     return (
         <div>
             <h3>Reported Accounts</h3>
+            <p className="text-primary">{error}</p>
             {accounts.map((a, index) =>
                 <div key={index}>
                     <CustomAccordion title={a.Name}
                         content={
                             <div>
                                 <p>Reported By - {a.By}</p>
-                                <button onClick={(e) => deleteUser(a.AccountId,e)}>Delete Reported User</button>
+                                <button onClick={(e) => deleteUser(a.AccountId, e)}>Delete Reported User</button>
                             </div>
                         } />
                     <br />

@@ -78,7 +78,7 @@ export function StudentDataForm(props) {
             })
         }).then(res => res.text())
             .then(data => {
-                console.log(data);
+                setError(data);
                 window.location.reload(false);
             });
     }
@@ -107,7 +107,7 @@ export function StudentDataForm(props) {
                     <button>Submit</button>
                 </div>
                 <div className="row">
-                    <h5>{ errorMessage }</h5>
+                    <p className="text-primary">{errorMessage}</p>
                 </div>
             </form>
         </div>

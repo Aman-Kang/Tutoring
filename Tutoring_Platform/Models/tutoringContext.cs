@@ -31,9 +31,6 @@ namespace Tutoring_Platform.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -111,6 +108,11 @@ namespace Tutoring_Platform.Models
 
                 entity.Property(e => e.Friday).HasColumnName("friday");
 
+                entity.Property(e => e.Message)
+                    .HasMaxLength(500)
+                    .IsUnicode(false)
+                    .HasColumnName("message");
+
                 entity.Property(e => e.Monday).HasColumnName("monday");
 
                 entity.Property(e => e.Saturday).HasColumnName("saturday");
@@ -147,6 +149,11 @@ namespace Tutoring_Platform.Models
                 entity.HasIndex(e => e.RequestId, "IX_appoint_slots_request_id");
 
                 entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Message)
+                    .HasMaxLength(500)
+                    .IsUnicode(false)
+                    .HasColumnName("message");
 
                 entity.Property(e => e.RequestId).HasColumnName("request_id");
 
@@ -245,11 +252,7 @@ namespace Tutoring_Platform.Models
             {
                 entity.ToTable("statistics");
 
-                entity.HasIndex(e => e.AdminId, "IX_statistics_admin_id");
-
                 entity.Property(e => e.Id).HasColumnName("id");
-
-                entity.Property(e => e.AdminId).HasColumnName("admin_id");
 
                 entity.Property(e => e.Data)
                     .IsUnicode(false)
@@ -258,12 +261,6 @@ namespace Tutoring_Platform.Models
                 entity.Property(e => e.Name)
                     .IsUnicode(false)
                     .HasColumnName("name");
-
-                entity.HasOne(d => d.Admin)
-                    .WithMany(p => p.Statistics)
-                    .HasForeignKey(d => d.AdminId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_statistics_user");
             });
 
             modelBuilder.Entity<StudTutorInfo>(entity =>

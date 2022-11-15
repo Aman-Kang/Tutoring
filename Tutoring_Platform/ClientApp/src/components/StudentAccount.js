@@ -4,7 +4,7 @@ import { useAuth0 }
 import { useEffect, useState } from 'react';
 
 export function StudentAccount() {
-    const { user, isAuthenticated } = useAuth0();
+    const { user } = useAuth0();
     const [errorMessage, setError] = useState("");
     const [name, setName] = useState("");
     const [address, setAddress] = useState("");
@@ -87,7 +87,7 @@ export function StudentAccount() {
                 })
             }).then(res => res.text())
                 .then(data => {
-                    console.log(data);
+                    setError(data);
                 });
         } else {
             setError("All fields should be filled in to submit the request!")
@@ -114,7 +114,7 @@ export function StudentAccount() {
             </ div >
             <div className="row">
                 <button onClick={updateInfo}>Update</button>
-                <h5>{errorMessage}</h5>
+                <p className="text-primary">{errorMessage}</p>
             </div>
         </div>
     );

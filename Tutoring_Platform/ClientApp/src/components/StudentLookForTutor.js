@@ -7,7 +7,7 @@ import { useAuth0 }
 
 export function StudentLookForTutor() {
 
-    const { user, isAuthenticated } = useAuth0();
+    const { user } = useAuth0();
     const [courseName, setCourseName] = useState("");
     const [errorMessage, setError] = useState("");
     const [sunday, setSunday] = useState(0);
@@ -18,6 +18,7 @@ export function StudentLookForTutor() {
     const [friday, setFriday] = useState(0);
     const [saturday, setSaturday] = useState(0);
     const [tutors, setTutors] = useState([]);
+    const [message, setMessage] = useState("");
 
     const courseNameChange = (e) => {
         setCourseName(e.target.value);
@@ -96,6 +97,10 @@ export function StudentLookForTutor() {
         }
     }
 
+    const messageChange = (e) => {
+        setMessage(e.target.value);
+    }
+
     const searchForTutors = () => {
         setError("");
         fetch('student/SearchTutors', {
@@ -132,11 +137,12 @@ export function StudentLookForTutor() {
                 courseName: courseName,
                 days: days,
                 tutorId: tutorId,
-                studId: studId
+                studId: studId,
+                message:message
             })
         }).then(res => res.text())
             .then(data => {
-                console.log(data);
+                setError(data);
             });
     }
     function reportUser(tutorId) {
@@ -151,21 +157,20 @@ export function StudentLookForTutor() {
             })
         }).then(res => res.text())
             .then(data => {
-                console.log(data);
+                setError(data);
             });
     }
     return (
         <div>
-            <p>Enter the below mentioned details so that we can find you a prefect tutor!</p>
+            <p>Enter the below mentioned details so that we can find you a perfect tutor!</p>
+            <p className="text-primary">{errorMessage}</p>
             <form onSubmit={onSubmit}>
                 <div className="row">
                     <div className="col-6">
                         <p>Program Course in which you need help (Write the full name of the course)</p>
                         <p><input type="text" value={courseName} onChange={courseNameChange }/></p>
                         <button>Submit</button>
-                        <div className="row">
-                            <h5>{errorMessage}</h5>
-                        </div>
+                        
                     </div>
                     <div className="col-6">
                         <p>What days of the week you want the tutoring sessions:</p>
@@ -201,6 +206,7 @@ export function StudentLookForTutor() {
                 </div>
                 
                 <div>
+                    
                     {tutors.map((t, index) =>
                         <div key={index}>
                             <CustomAccordion title={t.Name}
@@ -210,7 +216,7 @@ export function StudentLookForTutor() {
                                         <p>Status {t.Status}</p>
                                         <p>Wage {t.Wage}</p>
                                         <p>Enter a message for tutor: </p>
-                                        <input type="text" value={ } onChange={ } />
+                                        <input type="text" value={message} onChange={messageChange} />
                                         <button onClick={(e) => sendTutorRequest(t.CourseName, t.Days, t.tutorId, t.studId, e)}>Send Tutor Request</button>
                                         <button onClick={(e) => reportUser(t.tutorId, e)}>Report User</button>
                                     </div>

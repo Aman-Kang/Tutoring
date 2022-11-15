@@ -5,7 +5,7 @@ import { useAuth0 }
 import { CustomAccordion } from './CustomAccordion';
 
 export function TutorAppointments(){
-    const { user, isAuthenticated } = useAuth0();
+    const { user } = useAuth0();
     const [errorMessage, setError] = useState("");
     const [appointments, setAppointments] = useState([]);
     const [paypal, setPaypal] = useState("");
@@ -47,7 +47,7 @@ export function TutorAppointments(){
                 })
             }).then(res => res.text())
                 .then(data => {
-                    console.log(data);
+                    setError(data);
                     setPaypal("");
                     setZoom("");
                 });
@@ -91,6 +91,7 @@ export function TutorAppointments(){
             )
             }
             <h3>Confirmed Appointments By Students</h3>
+            <p className="text-primary">{errorMessage}</p>
             {
                 appointments.map((a, index) =>
                     <div key={index}>
@@ -102,7 +103,7 @@ export function TutorAppointments(){
                                     <p>Enter Paypal link: <input type="text" value={paypal} onChange={paypalChange} /></p>
                                     <p>Enter Zoom link: <input type="text" value={zoom} onChange={zoomChange} /></p>
                                     <button onClick={(e) => confirmAppoint(a.Id, e)}>Add to upcoming appointments</button>
-                                    <h5>{errorMessage}</h5>
+                                    
                                 </div>
 
                             } />

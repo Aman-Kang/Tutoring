@@ -49,7 +49,7 @@ namespace Tutoring_Platform.Controllers
 
         [Route("CreateStudent")]
         [HttpPost]
-        public string CreateStudent([FromBody] StudentParam studentParams)
+        public string CreateStudent([FromBody] ProfileData studentParams)
         {
             string jsonResults = "";
             try
@@ -85,7 +85,25 @@ namespace Tutoring_Platform.Controllers
                         Semester = Convert.ToInt32(studentParams.Semester)
                     };
                     db.StudTutorInfos.Add(studentTutor);
-                    
+                    db.SaveChanges();
+                    var userStat = from st in db.Statistics
+                                   where st.Id == 11001
+                                   select st;
+                    foreach (Statistic s in userStat)
+                    {
+                        s.Data = (Convert.ToInt32(s.Data) + 1).ToString();
+                    }
+                    if (studentParams.Role == "student")
+                    {
+                        var studStat = from st in db.Statistics
+                                       where st.Id == 11002
+                                       select st;
+                        foreach (Statistic s in studStat)
+                        {
+                            s.Data = (Convert.ToInt32(s.Data) + 1).ToString();
+
+                        }
+                    }
                     db.SaveChanges();
                     if (studentParams.Role == "tutor")
                     {
@@ -107,12 +125,16 @@ namespace Tutoring_Platform.Controllers
                             Status = status
                         };
                         db.TutorInfos.Add(tutor);
-                        try
+                        db.SaveChanges();
+                        var tutorStat = from st in db.Statistics
+                                       where st.Id == 11003
+                                       select st;
+                        foreach (Statistic s in tutorStat)
                         {
-                            db.SaveChanges();
+                            s.Data = (Convert.ToInt32(s.Data) + 1).ToString();
+
                         }
-                        catch
-                        { }
+                        db.SaveChanges();
                     }
                     jsonResults = "Profile Created";
                     
@@ -183,7 +205,8 @@ namespace Tutoring_Platform.Controllers
                     Wednesday = requestParam.Days[3],
                     Thursday = requestParam.Days[4],
                     Friday = requestParam.Days[5],
-                    Saturday = requestParam.Days[6]
+                    Saturday = requestParam.Days[6],
+                    Message = requestParam.Message
                 };
 
                 db.AppointRequests.Add(aRequest);
@@ -334,7 +357,7 @@ namespace Tutoring_Platform.Controllers
                     string courseName = requestsMade[i].Course;
                     var slots = (from asl in db.AppointSlots
                                  where asl.RequestId == requestsMade[i].Id
-                                 select new { asl.Id, asl.Slot }).ToArray();
+                                 select new { asl.Id, asl.Slot,asl.Message}).ToArray();
                     var slot1 = slots[0].Slot;
                     var slot2 = slots[1].Slot;
                     var slot3 = slots[2].Slot;
@@ -355,6 +378,7 @@ namespace Tutoring_Platform.Controllers
                         Id3 = slots[2].Id,
                         Id4 = slots[3].Id,
                         Id5 = slots[4].Id,
+                        Message = slots[0].Message
                     });
                 }
                 jsonResults = JsonConvert.SerializeObject(results);
@@ -444,14 +468,14 @@ namespace Tutoring_Platform.Controllers
             string jsonResults = "";
             try
             {
-                List<StudentParam> results = new List<StudentParam>();
+                List<ProfileData> results = new List<ProfileData>();
                 var stud = (from sti in db.StudTutorInfos
                             where sti.UserId == user
                             select new { sti, sti.User.Name, sti.User.Email }).ToArray();
 
                 if (stud.Length > 0)
                 {
-                    StudentParam student = new StudentParam
+                    ProfileData student = new ProfileData
                     {
                         Name = stud[0].Name,
                         Address = stud[0].sti.Address,
@@ -477,7 +501,7 @@ namespace Tutoring_Platform.Controllers
 
         [Route("UpdateInfo")]
         [HttpPost]
-        public string UpdateInfo([FromBody] StudentParam student)
+        public string UpdateInfo([FromBody] ProfileData student)
         {
             if (student.UserId != null &&  student.Address != null && student.City != null && student.Postal != null &&
                 student.Province != null && student.School != null && student.Field != null && student.Program != null &&
@@ -554,191 +578,6 @@ namespace Tutoring_Platform.Controllers
                 return "Report request sent!";
             }
             return "Could not send the report request!";
-        }
-
-
-        [Route("GetReportedAcc")]
-        [HttpPost]
-        public string GetReportedAcc([FromBody] string userId)
-        {
-
-            string jsonResults = "";
-            try
-            {
-                ReportAccount[] requests = (from ra in db.ReportAccounts
-                                            select ra).ToArray();
-
-                List<GetReportAccount> results = new List<GetReportAccount>();
-                if (requests.Length > 0)
-                {
-                    foreach (var request in requests)
-                    {
-                        var getName = from u in db.Users
-                                      where u.Id == request.AccountId
-                                      select u.Name;
-                        var reportedBy = from sti in db.StudTutorInfos
-                                         where sti.Id == request.UserId
-                                         select sti.User.Name;
-                        GetReportAccount getReportAccount = new GetReportAccount
-                        {
-                            AccountId = request.AccountId,
-                            Name = getName.First(),
-                            By = reportedBy.First()
-                        };
-                        results.Add(getReportAccount);
-                    }
-                    jsonResults = JsonConvert.SerializeObject(results);
-                }
-                return jsonResults;
-            }
-            catch
-            {
-                return jsonResults;
-            }
-            
-        }
-
-        [Route("DeleteUser")]
-        [HttpPost]
-        public string DeleteUser([FromBody] GetReportAccount account)
-        {
-            int user = Convert.ToInt32(account.AccountId);
-            try
-            {
-                var adminReplies = from ar in db.AdminReplies
-                                   where ar.Query.User.User.Id == user
-                                   select ar;
-                if (adminReplies.Count() > 0) Console.WriteLine(adminReplies.First().Id);
-                foreach (var a in adminReplies)
-                {
-                    db.AdminReplies.Remove(a);
-                }
-                db.SaveChanges();
-                var appointConfirm = from ac in db.AppointConfirms
-                                     where ac.Slot.Request.Stud.User.Id == user
-                                     select ac;
-                if (appointConfirm.Count() > 0) Console.WriteLine(appointConfirm.First().Id);
-                foreach (var a in appointConfirm)
-                {
-                    db.AppointConfirms.Remove(a);
-                }
-                db.SaveChanges();
-                var appointConfirm2 = from ac in db.AppointConfirms
-                                      where ac.Slot.Request.Tutor.User.User.Id == user
-                                      select ac;
-                Console.WriteLine(appointConfirm2.First().Id);
-                foreach (var a in appointConfirm2)
-                {
-                    db.AppointConfirms.Remove(a);
-                }
-                db.SaveChanges();
-                var appointSlot = from asl in db.AppointSlots
-                                  where asl.Request.Stud.User.Id == user
-                                  select asl;
-                if (appointSlot.Count() > 0) Console.WriteLine(appointSlot.First().Id);
-                foreach (var a in appointSlot)
-                {
-                    db.AppointSlots.Remove(a);
-                }
-                db.SaveChanges();
-                var appointSlot2 = from asl in db.AppointSlots
-                                   where asl.Request.Tutor.User.User.Id == user
-                                   select asl;
-                if (appointSlot2.Count() > 0) Console.WriteLine(appointSlot2.First().Id);
-                foreach (var a in appointSlot2)
-                {
-                    db.AppointSlots.Remove(a);
-                }
-                db.SaveChanges();
-                var appointRequest = from ar in db.AppointRequests
-                                     where ar.Stud.User.Id == user
-                                     select ar;
-                if (appointRequest.Count() > 0)
-                    Console.WriteLine(appointRequest.First().Id);
-                foreach (var a in appointRequest)
-                {
-                    db.AppointRequests.Remove(a);
-                }
-                db.SaveChanges();
-                var helpQueries = from hq in db.HelpQueries
-                                  where hq.User.User.Id == user
-                                  select hq;
-                if (helpQueries.Count() > 0)
-                    Console.WriteLine(helpQueries.First().Id);
-                foreach (var h in helpQueries)
-                {
-                    db.HelpQueries.Remove(h);
-                }
-                db.SaveChanges();
-                var reportAccount = from ra in db.ReportAccounts
-                                    where ra.User.User.Id == user
-                                    select ra;
-                if (reportAccount.Count() > 0)
-                    Console.WriteLine(reportAccount.First().Id);
-                foreach (var r in reportAccount)
-                {
-                    db.ReportAccounts.Remove(r);
-                }
-                db.SaveChanges();
-                var daysAvail = from da in db.DaysAvailables
-                                where da.User.User.User.Id == user
-                                select da;
-                if (daysAvail.Count() > 0)
-                    Console.WriteLine(daysAvail.First().Id);
-                foreach (var d in daysAvail)
-                {
-                    db.DaysAvailables.Remove(d);
-                }
-                db.SaveChanges();
-                var tutorCourse = from tc in db.TutorCourses
-                                  where tc.Tutor.User.User.Id == user
-                                  select tc;
-                if (tutorCourse.Count() > 0)
-                    Console.WriteLine(tutorCourse.First().Id);
-                foreach (var t in tutorCourse)
-                {
-                    db.TutorCourses.Remove(t);
-                }
-                db.SaveChanges();
-                var tutorInfo = from ti in db.TutorInfos
-                                where ti.User.User.Id == user
-                                select ti;
-                if (tutorInfo.Count() > 0)
-                    Console.WriteLine(tutorInfo.First().Id);
-                foreach (var t in tutorInfo)
-                {
-                    db.TutorInfos.Remove(t);
-                }
-                db.SaveChanges();
-                var studTutor = from sti in db.StudTutorInfos
-                                where sti.User.Id == user
-                                select sti;
-                if (studTutor.Count() > 0)
-                    Console.WriteLine(studTutor.First().Id);
-                foreach (var s in studTutor)
-                {
-                    db.StudTutorInfos.Remove(s);
-                }
-                db.SaveChanges();
-                var userAccount =
-                            from u in db.Users
-                            where u.Id == user
-                            select u;
-                if (userAccount.Count() > 0)
-                    Console.WriteLine(userAccount.First().Id);
-                foreach (var u in userAccount)
-                {
-                    db.Users.Remove(u);
-                }
-                db.SaveChanges();
-                return "Account deleted";
-            }
-            
-            catch
-            {
-                return "Account could not be deleted";
-            }
-
         }
     }
 }

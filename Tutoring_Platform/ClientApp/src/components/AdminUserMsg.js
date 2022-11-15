@@ -44,7 +44,7 @@ export function AdminUserMsg(){
                 })
             }).then(res => res.text())
                 .then(data => {
-                    console.log(data);
+                    setError(data);
                     setReply("");
                 });
         } else {
@@ -55,6 +55,7 @@ export function AdminUserMsg(){
     return (
         <div>
             <h3>User Messages</h3>
+            <p className="text-primary">{errorMessage}</p>
             {queries.map((q, index) =>
                 <div key={index}>
                     <CustomAccordion title={q.UserId}
@@ -68,7 +69,7 @@ export function AdminUserMsg(){
                                     cols={50}
                                 /></p>
                                 <button onClick={(e) => sendReply(q.QueryId, e)}>Send a Reply</button>
-                                <h5>{errorMessage}</h5>
+                                
                             </div>
                         } />
                     <br />

@@ -4,7 +4,7 @@ import { useEffect,useState } from 'react';
 import { useAuth0 }
     from "@auth0/auth0-react";
 export function StudentAppointments(){
-    const { user, isAuthenticated } = useAuth0();
+    const { user } = useAuth0();
     const [requests, setRequests] = useState([]);
     const [errorMessage, setError] = useState("");
     const [slot, setSlot] = useState("");
@@ -19,7 +19,6 @@ export function StudentAppointments(){
         }).then(res => res.json())
             .then(data => {
                 if (data != "")setRequests(data);
-                
             });
     }
 
@@ -50,7 +49,7 @@ export function StudentAppointments(){
                 body: JSON.stringify(slot)
             }).then(res => res.text())
                 .then(data => {
-                    console.log(data);
+                    setError(data);
                 });
         } else {
             setError("A slot must be selected in order to submit it!")
@@ -89,6 +88,7 @@ export function StudentAppointments(){
                         content={
                             <div>
                                 <p>Course {r.CourseName}</p>
+                                <p>Message - {r.Message }</p>
                                 <p>Please pick a time slot from below:</p>
 
                                 <p><input type="radio" value={r.Id1} onChange={slotChanged} checked={slot == r.Id1} /> {r.Slot1 }</p>
@@ -97,7 +97,7 @@ export function StudentAppointments(){
                                 <p><input type="radio" value={r.Id4} onChange={slotChanged} checked={slot == r.Id4} /> {r.Slot4}</p>
                                 <p><input type="radio" value={r.Id5} onChange={slotChanged} checked={slot == r.Id5} /> {r.Slot5}</p>
                                 <button onClick={sendConfirmedSlot}>Send Time Slot to Tutor</button>
-                                <h5>{errorMessage}</h5>
+                                <p className="text-primary">{errorMessage}</p>
                             </div>
                         } />
                     <br />

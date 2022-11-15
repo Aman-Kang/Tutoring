@@ -1,6 +1,6 @@
 ﻿namespace Tutoring_Platform.CustomModels
 {
-    public class StudentParam
+    public class ProfileData
     {
         public string? Name { get; set; }
         public string? Address { get; set; }
@@ -55,6 +55,7 @@
         public int[]? Days { get; set; }
         public int? tutorId { get; set; }
         public int? studId { get; set; }
+        public string? Message { get; set; }
     }
     public class DisplayRequestsReturn
     {
@@ -66,6 +67,7 @@
         public string? Semester { get; set; }
         public string? School { get; set; }
         public string? Program { get; set; }
+        public string? Message { get; set; }
     }
     public class DisplayStudRequestsReturn
     {
@@ -81,6 +83,7 @@
         public int? Id3 { get; set; }
         public int? Id4 { get; set; }
         public int? Id5 { get; set; }
+        public string? Message { get; set; }
     }
     public class SendAppointSlots
     {
@@ -90,6 +93,7 @@
         public string? Slot3 { get; set; }
         public string? Slot4 { get; set; }
         public string? Slot5 { get; set; }
+        public string? Message { get; set; }
     }
     public class GetConfirmedAppoint
     {
@@ -131,6 +135,12 @@
         public string? Name { get; set; }
         public string? By { get; set; }
         public int? AccountId { get; set; }
+    }
+
+    public class GetStats
+    {
+        public string? Name { get; set; }
+        public string? Data { get; set; }
     }
 
 }

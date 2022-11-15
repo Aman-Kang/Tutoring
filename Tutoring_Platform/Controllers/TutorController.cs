@@ -57,7 +57,8 @@ namespace Tutoring_Platform.Controllers
                         School = getStudData.First().School,
                         CourseName = appointRequests[i].Course,
                         Days = new int[] {Convert.ToInt32(appointRequests[i].Sunday), Convert.ToInt32(appointRequests[i].Monday) , Convert.ToInt32(appointRequests[i].Tuesday) , Convert.ToInt32(appointRequests[i].Wednesday) ,
-                        Convert.ToInt32(appointRequests[i].Thursday),Convert.ToInt32(appointRequests[i].Friday),Convert.ToInt32(appointRequests[i].Saturday)}
+                        Convert.ToInt32(appointRequests[i].Thursday),Convert.ToInt32(appointRequests[i].Friday),Convert.ToInt32(appointRequests[i].Saturday)},
+                        Message = appointRequests[i].Message
                     });
                 }
                 jsonResults = JsonConvert.SerializeObject(results);
@@ -75,7 +76,6 @@ namespace Tutoring_Platform.Controllers
         [HttpPost]
         public string SendAppointSlots([FromBody] SendAppointSlots sendAppointSlots)
         {
-            
             string jsonResults = "";
             try
             {
@@ -87,7 +87,8 @@ namespace Tutoring_Platform.Controllers
                     {
                         RequestId = requestId,
                         Slot = sendAppointSlots.Slot1,
-                        Selected = false
+                        Selected = false,
+                        Message = sendAppointSlots.Message
                     };
 
                     db.AppointSlots.Add(aSlot);
@@ -95,7 +96,8 @@ namespace Tutoring_Platform.Controllers
                     {
                         RequestId = requestId,
                         Slot = sendAppointSlots.Slot2,
-                        Selected = false
+                        Selected = false,
+                        Message = sendAppointSlots.Message
                     };
 
                     db.AppointSlots.Add(aSlot2);
@@ -103,7 +105,8 @@ namespace Tutoring_Platform.Controllers
                     {
                         RequestId = requestId,
                         Slot = sendAppointSlots.Slot3,
-                        Selected = false
+                        Selected = false,
+                        Message = sendAppointSlots.Message
                     };
 
                     db.AppointSlots.Add(aSlot3);
@@ -111,7 +114,8 @@ namespace Tutoring_Platform.Controllers
                     {
                         RequestId = requestId,
                         Slot = sendAppointSlots.Slot4,
-                        Selected = false
+                        Selected = false,
+                        Message = sendAppointSlots.Message
                     };
 
                     db.AppointSlots.Add(aSlot4);
@@ -119,7 +123,8 @@ namespace Tutoring_Platform.Controllers
                     {
                         RequestId = requestId,
                         Slot = sendAppointSlots.Slot5,
-                        Selected = false
+                        Selected = false,
+                        Message = sendAppointSlots.Message
                     };
 
                     db.AppointSlots.Add(aSlot5);

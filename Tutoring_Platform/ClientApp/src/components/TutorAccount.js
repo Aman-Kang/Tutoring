@@ -192,7 +192,7 @@ export function TutorAccount() {
                 })
             }).then(res => res.text())
                 .then(data => {
-                    console.log(data);
+                    setError(data);
                     
                 });
         } else {
@@ -235,7 +235,7 @@ export function TutorAccount() {
                 <button onClick={updateInfo}>Update</button>
             </div>
             <div className="row">
-                <h5>{errorMessage}</h5>
+                <p className="text-primary">{errorMessage}</p>
             </div>
         </div>
     );

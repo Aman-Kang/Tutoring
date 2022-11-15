@@ -20,7 +20,7 @@ export function StudentHelp() {
                 })
             }).then(res => res.text())
                 .then(data => {
-                    console.log(data);
+                    setError(data);
                     setQuery("");
                 });
         } else {
@@ -40,7 +40,7 @@ export function StudentHelp() {
                 cols={50}
             /></p>
             <button onClick={AskQuery}>Send</button>
-            <h5>{errorMessage}</h5>
+            <p className="text-primary">{errorMessage}</p>
         </div>
     );
     

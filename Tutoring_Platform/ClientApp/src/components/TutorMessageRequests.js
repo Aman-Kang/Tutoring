@@ -13,6 +13,7 @@ export function TutorMessageRequests(){
     const [slot3, setSlot3] = useState("");
     const [slot4, setSlot4] = useState("");
     const [slot5, setSlot5] = useState("");
+    const [message, setMessage] = useState("");
 
     const displayRequests = () => {
         fetch('tutor/GetTutorRequests', {
@@ -25,6 +26,9 @@ export function TutorMessageRequests(){
             .then(data => {
                 if (data != "") setRequests(data);
             });
+    }
+    const messageChange = (e) => {
+        setMessage(e.target.value);
     }
     const timeSlot1Changed = (e) => {
         setSlot1(e.target.value);
@@ -55,11 +59,12 @@ export function TutorMessageRequests(){
                     slot2: slot2,
                     slot3: slot3,
                     slot4: slot4,
-                    slot5: slot5
+                    slot5: slot5,
+                    message: message
                 })
             }).then(res => res.text())
                 .then(data => {
-                    console.log(data);
+                    setError(data);
                     setSlot1("");
                     setSlot2("");
                     setSlot3("");
@@ -87,13 +92,13 @@ export function TutorMessageRequests(){
             })
         }).then(res => res.text())
             .then(data => {
-                console.log(data);
+                setError(data);
             });
     }
     return (
         <div>
             <h3>List of Students</h3>
-            
+            <p className="text-primary">{errorMessage}</p>
             <div>
                 {
                     requests.map((r, index) => 
@@ -105,7 +110,8 @@ export function TutorMessageRequests(){
                                         <p>Program - {r.Program}</p>
                                         <p>Semester - {r.Semester}</p>
                                         <p>Course Name - {r.CourseName}</p>
-                                        <p>Days - {}</p>
+                                        <p>Days - { }</p>
+                                        <p>Message - { r.Message}</p>
 
                                         <p><input type="datetime-local" value={slot1} onChange={timeSlot1Changed} min="2022-01-01T00:00" max="2023-12-31T00:00" /></p>
                                         <p><input type="datetime-local" value={slot2} onChange={timeSlot2Changed} min="2022-01-01T00:00" max="2023-12-31T00:00" /></p>
@@ -113,10 +119,8 @@ export function TutorMessageRequests(){
                                         <p><input type="datetime-local" value={slot4} onChange={timeSlot4Changed} min="2022-01-01T00:00" max="2023-12-31T00:00" /></p>
                                         <p><input type="datetime-local" value={slot5} onChange={timeSlot5Changed} min="2022-01-01T00:00" max="2023-12-31T00:00" /></p>
                                         <p>Enter a message for student: </p>
-                                        <input type="text" value={ } onChange={ } />
+                                        <input type="text" value={message} onChange={messageChange} />
                                         <button onClick={(e) => sendTimeSlots(r.Id, slot1, slot2, slot3, slot4, slot5, e)}>Send Time Slots to Student</button>
-                                        <h5>{errorMessage}</h5>
-                                        
                                         <button onClick={(e) => reportUser(r.StudId, e) }>Report User</button>
                                     </div>
                                 } />

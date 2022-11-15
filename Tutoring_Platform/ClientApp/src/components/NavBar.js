@@ -204,9 +204,6 @@ export function NavBar(){
                                     <NavLink tag={Link} className="text-dark" to="/admin-account">Account</NavLink>
                                 </NavItem>
                                 <NavItem>
-                                    <NavLink tag={Link} className="text-dark" to="/admin-account">View as</NavLink>
-                                </NavItem>
-                                <NavItem>
                                     <LogoutButton />
                                 </NavItem>
                                 <NavItem>

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import LoginButton from './LoginButton';
+import LogoutButton from './LogoutButton';
 
 export class Home extends Component {
   static displayName = Home.name;
@@ -8,7 +9,8 @@ export class Home extends Component {
     return (
       <div>
             <h1>Hello</h1>
-            <LoginButton/>
+            <LoginButton />
+            <LogoutButton />
       </div>
     );
   }

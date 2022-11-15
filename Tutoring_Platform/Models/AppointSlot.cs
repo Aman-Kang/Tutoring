@@ -14,6 +14,7 @@ namespace Tutoring_Platform.Models
         public int RequestId { get; set; }
         public string Slot { get; set; } = null!;
         public bool Selected { get; set; }
+        public string? Message { get; set; }
 
         public virtual AppointRequest Request { get; set; } = null!;
         public virtual ICollection<AppointConfirm> AppointConfirms { get; set; }
