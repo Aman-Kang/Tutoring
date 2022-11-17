@@ -86,25 +86,7 @@ namespace Tutoring_Platform.Controllers
                     };
                     db.StudTutorInfos.Add(studentTutor);
                     db.SaveChanges();
-                    var userStat = from st in db.Statistics
-                                   where st.Id == 11001
-                                   select st;
-                    foreach (Statistic s in userStat)
-                    {
-                        s.Data = (Convert.ToInt32(s.Data) + 1).ToString();
-                    }
-                    if (studentParams.Role == "student")
-                    {
-                        var studStat = from st in db.Statistics
-                                       where st.Id == 11002
-                                       select st;
-                        foreach (Statistic s in studStat)
-                        {
-                            s.Data = (Convert.ToInt32(s.Data) + 1).ToString();
 
-                        }
-                    }
-                    db.SaveChanges();
                     if (studentParams.Role == "tutor")
                     {
                         int getStudId = (from sti in db.StudTutorInfos
@@ -125,15 +107,6 @@ namespace Tutoring_Platform.Controllers
                             Status = status
                         };
                         db.TutorInfos.Add(tutor);
-                        db.SaveChanges();
-                        var tutorStat = from st in db.Statistics
-                                       where st.Id == 11003
-                                       select st;
-                        foreach (Statistic s in tutorStat)
-                        {
-                            s.Data = (Convert.ToInt32(s.Data) + 1).ToString();
-
-                        }
                         db.SaveChanges();
                     }
                     jsonResults = "Profile Created";
@@ -358,28 +331,30 @@ namespace Tutoring_Platform.Controllers
                     var slots = (from asl in db.AppointSlots
                                  where asl.RequestId == requestsMade[i].Id
                                  select new { asl.Id, asl.Slot,asl.Message}).ToArray();
-                    var slot1 = slots[0].Slot;
-                    var slot2 = slots[1].Slot;
-                    var slot3 = slots[2].Slot;
-                    var slot4 = slots[3].Slot;
-                    var slot5 = slots[4].Slot;
-
-                    results.Add(new DisplayStudRequestsReturn
+                    if(slots.Length > 4)
                     {
-                        Name = getRequestTutorName.First(),
-                        CourseName = courseName,
-                        Slot1 = slot1,
-                        Slot2 = slot2,
-                        Slot3 = slot3,
-                        Slot4 = slot4,
-                        Slot5 = slot5,
-                        Id1 = slots[0].Id,
-                        Id2 = slots[1].Id,
-                        Id3 = slots[2].Id,
-                        Id4 = slots[3].Id,
-                        Id5 = slots[4].Id,
-                        Message = slots[0].Message
-                    });
+                        var slot1 = slots[0].Slot;
+                        var slot2 = slots[1].Slot;
+                        var slot3 = slots[2].Slot;
+                        var slot4 = slots[3].Slot;
+                        var slot5 = slots[4].Slot;
+                        results.Add(new DisplayStudRequestsReturn
+                        {
+                            Name = getRequestTutorName.First(),
+                            CourseName = courseName,
+                            Slot1 = slot1,
+                            Slot2 = slot2,
+                            Slot3 = slot3,
+                            Slot4 = slot4,
+                            Slot5 = slot5,
+                            Id1 = slots[0].Id,
+                            Id2 = slots[1].Id,
+                            Id3 = slots[2].Id,
+                            Id4 = slots[3].Id,
+                            Id5 = slots[4].Id,
+                            Message = slots[0].Message
+                        });
+                    }
                 }
                 jsonResults = JsonConvert.SerializeObject(results);
                 return jsonResults;
@@ -429,35 +404,38 @@ namespace Tutoring_Platform.Controllers
                 var requestId = (from ar in db.AppointRequests
                                  where ar.StudId == studId.First()
                                  select new { ar.Id, ar.Course, ar.Tutor.User.User.Name }).ToArray();
-                if (requestId.Count() > 0)
-                {
-                    for (int i = 0; i < requestId.Count(); i++)
+                for (int i = 0; i < requestId.Count(); i++)
                     {
-                        var slotId = from asl in db.AppointSlots
-                                     where asl.RequestId == requestId[i].Id && asl.Selected == true
-                                     select new { asl.Id, asl.Slot };
+                    var slotId = from asl in db.AppointSlots
+                                    where asl.RequestId == requestId[i].Id && asl.Selected == true
+                                    select new { asl.Id, asl.Slot };
+                    foreach(var id in slotId)
+                    {
                         var confirmAppoint = from ac in db.AppointConfirms
-                                             where ac.SlotId == slotId.First().Id
-                                             select new { ac.Id, ac.PaypalLink, ac.MeetingLink };
-                        GetAppointments getAppointments = new GetAppointments
+                                                where ac.SlotId == id.Id
+                                                select new { ac.Id, ac.PaypalLink, ac.MeetingLink };
+                        foreach(var confirmAppointment in confirmAppoint)
                         {
-                            Date = slotId.First().Slot,
-                            Course = requestId[i].Course,
-                            TutorStud = requestId[i].Name,
-                            Paypal = confirmAppoint.First().PaypalLink,
-                            Zoom = confirmAppoint.First().MeetingLink
-                        };
-                        results.Add(getAppointments);
+                            GetAppointments getAppointments = new GetAppointments
+                            {
+                                ConfirmId = confirmAppointment.Id,
+                                Date = id.Slot,
+                                Course = requestId[i].Course,
+                                TutorStud = requestId[i].Name,
+                                Paypal = confirmAppointment.PaypalLink,
+                                Zoom = confirmAppointment.MeetingLink
+                            };
+                            results.Add(getAppointments);
+                        }
                     }
-                    jsonResults = JsonConvert.SerializeObject(results);
                 }
+                jsonResults = JsonConvert.SerializeObject(results);
                 return jsonResults;
             }
             catch
             {
                 return jsonResults;
             }
-            
         }
 
         [Route("GetInfo")]
@@ -578,6 +556,49 @@ namespace Tutoring_Platform.Controllers
                 return "Report request sent!";
             }
             return "Could not send the report request!";
+        }
+
+        [Route("MarkAsDone")]
+        [HttpPost]
+        public string MarkAsDone([FromBody] string confirmId)
+        {
+            try
+            {
+                int confirmedId = Convert.ToInt32(confirmId);
+                IEnumerable<AppointConfirm> confirmed = from ac in db.AppointConfirms
+                                where ac.Id == confirmedId
+                                select ac;
+                IEnumerable<AppointConfirm> allConfirmed = from ac in db.AppointConfirms
+                                                        where ac.SlotId == confirmed.First().SlotId
+                                                        select ac;
+                IEnumerable<AppointSlot> slots = from asl in db.AppointSlots
+                                                    where asl.Id == confirmed.First().SlotId
+                                                    select asl;
+                IEnumerable<AppointSlot> allSlots = from asl in db.AppointSlots
+                                                    where asl.RequestId == slots.First().RequestId
+                                                    select asl;
+                IEnumerable < AppointRequest > requests = from ar in db.AppointRequests
+                                                            where ar.Id == slots.First().RequestId
+                                                            select ar;
+                foreach(AppointConfirm appointConfirm in allConfirmed)
+                {
+                    db.AppointConfirms.Remove(appointConfirm);
+                }
+                foreach (AppointSlot appointSlot in allSlots)
+                {
+                    db.AppointSlots.Remove(appointSlot);
+                }
+                foreach (AppointRequest appointReq in requests)
+                {
+                    db.AppointRequests.Remove(appointReq);
+                }
+                db.SaveChanges();
+                return "The appointment has been marked as Done!";
+            }
+            catch(Exception)
+            {
+                return "The appointment could not be marked as Done!";
+            }
         }
     }
 }

@@ -248,38 +248,40 @@ namespace Tutoring_Platform.Controllers
                 var requestId = (from ar in db.AppointRequests
                                  where ar.TutorId == tutorId.First()
                                  select new { ar.Id, ar.Course, ar.Stud.User.Name }).ToArray();
-                if (requestId.Length > 0)
+
+                for (int i = 0; i < requestId.Length; i++)
                 {
-                    for (int i = 0; i < requestId.Length; i++)
+                    var slotId = from asl in db.AppointSlots
+                                 where asl.RequestId == requestId[i].Id && asl.Selected == true
+                                 select new { asl.Id, asl.Slot };
+                    foreach (var id in slotId)
                     {
-                        var slotId = from asl in db.AppointSlots
-                                     where asl.RequestId == requestId[i].Id && asl.Selected == true
-                                     select new { asl.Id, asl.Slot };
-                        if (slotId.Count() > 0)
+
+                        var confirmAppoint = from ac in db.AppointConfirms
+                                             where ac.SlotId == id.Id
+                                             select new { ac.Id, ac.MeetingLink,ac.PaypalLink };
+                        foreach (var confirmAppointment in confirmAppoint)
                         {
-                            var confirmAppoint = from ac in db.AppointConfirms
-                                                 where ac.SlotId == slotId.First().Id
-                                                 select new { ac.Id, ac.MeetingLink };
                             GetAppointments getAppointments = new GetAppointments
                             {
-                                Date = slotId.First().Slot,
+                                ConfirmId = confirmAppointment.Id,
+                                Date = id.Slot,
                                 Course = requestId[i].Course,
                                 TutorStud = requestId[i].Name,
-                                Paypal = "",
-                                Zoom = confirmAppoint.First().MeetingLink
+                                Paypal = confirmAppointment.PaypalLink,
+                                Zoom = confirmAppointment.MeetingLink
                             };
                             results.Add(getAppointments);
                         }
                     }
-                    jsonResults = JsonConvert.SerializeObject(results);
                 }
+                jsonResults = JsonConvert.SerializeObject(results);
                 return jsonResults;
             }
             catch
             {
                 return jsonResults;
             }
-            
         }
 
         [Route("GetInfo")]

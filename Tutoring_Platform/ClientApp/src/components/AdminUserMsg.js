@@ -56,25 +56,25 @@ export function AdminUserMsg(){
         <div>
             <h3>User Messages</h3>
             <p className="text-primary">{errorMessage}</p>
-            {queries.map((q, index) =>
+            {(queries != [])?queries.map((q, index) =>
                 <div key={index}>
                     <CustomAccordion title={q.UserId}
                         content={
                             <div>
                                 <p>{q.Query}</p>
-                                <p>Enter you response: </p>
+                                <p><strong>Enter you response</strong>: </p>
                                 <p><textarea
                                     onChange={replyChange}
                                     rows={5}
                                     cols={50}
                                 /></p>
-                                <button onClick={(e) => sendReply(q.QueryId, e)}>Send a Reply</button>
+                                <button className="btn btn-info" onClick={(e) => sendReply(q.QueryId, e)}>Send a Reply</button>
                                 
                             </div>
                         } />
                     <br />
                 </div>
-            )
+            ):<p>No User messages at this moment!</p>
             }
         </div>
     );

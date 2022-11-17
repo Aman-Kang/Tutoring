@@ -98,24 +98,22 @@ export function StudentAccount() {
         <div>
             < div className="row" >
                 <div className="col">
-                    < p >Name: {name }</ p >
-                    < p >Email: {user.email}</ p >
-                    <p>Address: <input type="text" value={address} onChange={addressChange} /></p>
-                    <p>City: <input type="text" value={city} onChange={cityChange} /></p>
-                    <p>Postal Code: <input type="text" value={postal} onChange={postalChange} /></p>
-                    <p>Province: <input type="text" value={province} onChange={provinceChange} /></p>
+                    < p ><strong>Name</strong> {name }</ p >
+                    < p ><strong>Email</strong> {user.email}</ p >
+                    <p><strong>Address</strong> <input type="text" value={address} onChange={addressChange} /></p>
+                    <p><strong>City</strong> <input type="text" value={city} onChange={cityChange} /></p>
+                    <p><strong>Postal Code</strong> <input type="text" value={postal} onChange={postalChange} /></p>
+                    <p><strong>Province</strong> <input type="text" value={province} onChange={provinceChange} /></p>
+                    <button className="btn btn-info" onClick={updateInfo}>Update</button>
+                    <p className="text-primary">{errorMessage}</p>
                 </div>
                 <div className="col">
-                    < p >School: <input type="text" value={school} onChange={schoolChange} /></ p >
-                    < p >Field of Study: <input type="text" value={field} onChange={fieldChange} /></ p >
-                    <p>Program: <input type="text" value={program} onChange={programChange} /></p>
-                    <p>Semester: <input type="text" value={semester} onChange={semesterChange} /></p>
+                    < p ><strong>School</strong> <input type="text" value={school} onChange={schoolChange} /></ p >
+                    < p ><strong>Field of Study</strong> <input type="text" value={field} onChange={fieldChange} /></ p >
+                    <p><strong>Program</strong> <input type="text" value={program} onChange={programChange} /></p>
+                    <p><strong>Semester</strong> <input type="text" value={semester} onChange={semesterChange} /></p>
                 </div>
             </ div >
-            <div className="row">
-                <button onClick={updateInfo}>Update</button>
-                <p className="text-primary">{errorMessage}</p>
-            </div>
         </div>
     );
    

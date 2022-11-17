@@ -10,6 +10,7 @@ export function StudentLookForTutor() {
     const { user } = useAuth0();
     const [courseName, setCourseName] = useState("");
     const [errorMessage, setError] = useState("");
+    const [response, setResponse] = useState("");
     const [sunday, setSunday] = useState(0);
     const [monday, setMonday] = useState(0);
     const [tuesday, setTuesday] = useState(0);
@@ -89,7 +90,8 @@ export function StudentLookForTutor() {
     }
     const onSubmit=(e)=>{
         e.preventDefault();
-        if (courseName != "") {
+        if (courseName.trim() != "" && (sunday == 1 || monday == 1 || tuesday == 1 || wednesday == 1 ||
+            thursday == 1 || friday == 1 || saturday == 1)) {
             searchForTutors();
         }
         else {
@@ -103,19 +105,20 @@ export function StudentLookForTutor() {
 
     const searchForTutors = () => {
         setError("");
+        setTutors([]);
         fetch('student/SearchTutors', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                courseName: courseName,
+                courseName: courseName.trim(),
                 days: [sunday, monday, tuesday, wednesday, thursday, friday, saturday],
                 userId: user.sub.substring(6)
             })
         }).then(res => res.json())
             .then(data => {
-                if (data != "") setTutors(data);
+                setTutors(data);
                 setCourseName("");
                 setSunday(0);
                 setMonday(0);
@@ -142,7 +145,7 @@ export function StudentLookForTutor() {
             })
         }).then(res => res.text())
             .then(data => {
-                setError(data);
+                setResponse(data);
             });
     }
     function reportUser(tutorId) {
@@ -157,7 +160,7 @@ export function StudentLookForTutor() {
             })
         }).then(res => res.text())
             .then(data => {
-                setError(data);
+                setResponse(data);
             });
     }
     return (
@@ -169,23 +172,27 @@ export function StudentLookForTutor() {
                     <div className="col-6">
                         <p>Program Course in which you need help (Write the full name of the course)</p>
                         <p><input type="text" value={courseName} onChange={courseNameChange }/></p>
-                        <button>Submit</button>
                         
                     </div>
                     <div className="col-6">
                         <p>What days of the week you want the tutoring sessions:</p>
-                        <p><input type="checkbox" value="sunday" onChange={sundayChange }/> Sunday</p>
-                        <p><input type="checkbox" value="monday" onChange={mondayChange} /> Monday</p>
-                        <p><input type="checkbox" value="tuesday" onChange={tuesdayChange}/> Tuesday</p>
-                        <p><input type="checkbox" value="wednesday" onChange={wednesdayChange} /> Wednesday</p>
-                        <p><input type="checkbox" value="thursday" onChange={thursdayChange} /> Thursday</p>
-                        <p><input type="checkbox" value="friday" onChange={fridayChange} /> Friday</p>
-                        <p><input type="checkbox" value="saturday" onChange={saturdayChange} /> Saturday</p>
+                        <p><input type="checkbox" value="sunday" onChange={sundayChange} checked={sunday == 1 }/> Sunday</p>
+                        <p><input type="checkbox" value="monday" onChange={mondayChange} checked={monday == 1} /> Monday</p>
+                        <p><input type="checkbox" value="tuesday" onChange={tuesdayChange} checked={tuesday == 1} /> Tuesday</p>
+                        <p><input type="checkbox" value="wednesday" onChange={wednesdayChange} checked={wednesday == 1} /> Wednesday</p>
+                        <p><input type="checkbox" value="thursday" onChange={thursdayChange} checked={thursday == 1} /> Thursday</p>
+                        <p><input type="checkbox" value="friday" onChange={fridayChange} checked={friday == 1} /> Friday</p>
+                        <p><input type="checkbox" value="saturday" onChange={saturdayChange} checked={saturday == 1} /> Saturday</p>
+                    </div>
+                </div>
+                <div classname="row">
+                    <div className="col-2">
+                        <button className="btn btn-info">Submit</button>
                     </div>
                 </div>
             </form>
             
-            <p>List of tutors based on your search:</p>
+            <h4>List of tutors based on your search:</h4>
             <p>Filters</p>
             <div className="row">
                 <div className="col-3">
@@ -206,25 +213,25 @@ export function StudentLookForTutor() {
                 </div>
                 
                 <div>
-                    
-                    {tutors.map((t, index) =>
+                    <p className="text-primary">{response}</p>
+                    {(Object.keys(tutors).length > 0)?tutors.map((t, index) =>
                         <div key={index}>
                             <CustomAccordion title={t.Name}
                                 content={
                                     <div>
-                                        <p>School {t.School}</p>
-                                        <p>Status {t.Status}</p>
-                                        <p>Wage {t.Wage}</p>
-                                        <p>Enter a message for tutor: </p>
-                                        <input type="text" value={message} onChange={messageChange} />
-                                        <button onClick={(e) => sendTutorRequest(t.CourseName, t.Days, t.tutorId, t.studId, e)}>Send Tutor Request</button>
-                                        <button onClick={(e) => reportUser(t.tutorId, e)}>Report User</button>
+                                        <p><strong>School</strong> - {t.School}</p>
+                                        <p><strong>Status</strong> - {t.Status}</p>
+                                        <p><strong>Wage</strong> - ${t.Wage}</p>
+                                        <p><strong>Enter a message for tutor</strong>: </p>
+                                        <p><input type="text" value={message} onChange={messageChange} /></p>
+                                        <button className="btn btn-info mr-3" onClick={(e) => sendTutorRequest(t.CourseName, t.Days, t.tutorId, t.studId, e)}>Send Tutor Request</button>
+                                        <button className="btn btn-info" onClick={(e) => reportUser(t.tutorId, e)}>Report User</button>
                                     </div>
                                 } />
                             <br />
                             
                         </div>
-                    )
+                    ):<p>No tutors can be found! Please change your search criteria or check back later!</p>
                     }
                  </div>
             </div>

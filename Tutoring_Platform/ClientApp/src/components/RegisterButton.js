@@ -4,7 +4,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 const RegisterButton = () => {
     const { loginWithRedirect } = useAuth0();
 
-    return < button onClick={() => loginWithRedirect()}> Register </ button >;
+    return < button className="btn btn-info" onClick={() => loginWithRedirect()}> Register </ button >;
 };
 
 export default RegisterButton;

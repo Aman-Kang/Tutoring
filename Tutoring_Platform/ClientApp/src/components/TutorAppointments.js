@@ -7,6 +7,7 @@ import { CustomAccordion } from './CustomAccordion';
 export function TutorAppointments(){
     const { user } = useAuth0();
     const [errorMessage, setError] = useState("");
+    const [response, setResponse] = useState("");
     const [appointments, setAppointments] = useState([]);
     const [paypal, setPaypal] = useState("");
     const [zoom, setZoom] = useState("");
@@ -68,6 +69,34 @@ export function TutorAppointments(){
                 if (data != "") setAppointmentsA(data);
             });
     }
+    function markAsDone(confirmId, appointmentDate) {
+        var today = new Date();
+        var year = parseInt(appointmentDate.substring(0, 4));
+        var month = parseInt(appointmentDate.substring(5, 7));
+        var day = parseInt(appointmentDate.substring(8, 10));
+        var hour = parseInt(appointmentDate.substring(11, 13));
+        var min = parseInt(appointmentDate.substring(14, 16));
+
+        const date = new Date(year, month, day, hour, min);
+        console.log(today.getTime() + ", " + date.getTime());
+        console.log(confirmId);
+        if (today.getTime() <= date.getTime()) {
+            setError("");
+            fetch('student/MarkAsDone', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(String(confirmId))
+            }).then(res => res.text())
+                .then(data => {
+                    window.location.reload(false);
+                    setResponse(data);
+                });
+        } else {
+            setResponse("The appointment can only be marked as done if the appointment date and time has passed!")
+        }
+    }
     useEffect(() => {
         getAppointments();
         displayAppoints();
@@ -76,40 +105,42 @@ export function TutorAppointments(){
         <div>
             <p>It is your responsibility to check that the student has transferred the money to your account an hour before every session. If the transfer is not made, you can choose to not go to the session.</p>
             <h3>Upcoming Appointments</h3>
-            {appointmentsA.map((a, index) =>
+            {(Object.keys(appointmentsA).length > 0) ? appointmentsA.map((a, index) =>
                 <div key={index}>
-                    <CustomAccordion title={a.Date}
+                    <CustomAccordion title={a.Date.substring(0, 10)} 
                         content={
                             <div>
-                                <p>Course {a.Course}</p>
-                                <p>Student: {a.TutorStud}</p>
-                                <p>Meeting Link: {a.Zoom}</p>
+                                <p><strong>Time</strong> - {a.Date.substring(11)}</p>
+                                <p><strong>Course</strong> - {a.Course}</p>
+                                <p><strong>Student</strong> - {a.TutorStud}</p>
+                                <p><strong>Meeting Link</strong> - {a.Zoom}</p>
+                                <button className="btn btn-info" onClick={(e) => markAsDone(a.ConfirmId, a.Date, e)}>Mark this appointment as Done</button>
                             </div>
                         } />
                     <br />
                 </div>
-            )
+            ):<p>No booked appointments for now!</p>
             }
             <h3>Confirmed Appointments By Students</h3>
             <p className="text-primary">{errorMessage}</p>
-            {
+            {(Object.keys(appointments).length > 0) ?
                 appointments.map((a, index) =>
                     <div key={index}>
                         <CustomAccordion title={a.Name}
                             content={
                                 <div>
-                                    <p>Course: {a.Course}</p>
-                                    <p>Date and Time: {a.Slot}</p>
-                                    <p>Enter Paypal link: <input type="text" value={paypal} onChange={paypalChange} /></p>
-                                    <p>Enter Zoom link: <input type="text" value={zoom} onChange={zoomChange} /></p>
-                                    <button onClick={(e) => confirmAppoint(a.Id, e)}>Add to upcoming appointments</button>
+                                    <p><strong>Course</strong> - {a.Course}</p>
+                                    <p><strong>Date and Time</strong> - {a.Slot}</p>
+                                    <p><strong>Enter Paypal link</strong> - <input type="text" value={paypal} onChange={paypalChange} /></p>
+                                    <p><strong>Enter Zoom link</strong> - <input type="text" value={zoom} onChange={zoomChange} /></p>
+                                    <button className="btn btn-info" onClick={(e) => confirmAppoint(a.Id, e)}>Add to upcoming appointments</button>
                                     
                                 </div>
 
                             } />
                         <br />
                     </div>
-                )
+                ):<p>No confirmed appointments by the students!</p>
             }
         </div>
     );

@@ -5,7 +5,7 @@ import { useAuth0 }
 import { CustomAccordion } from './CustomAccordion';
 
 export function TutorMessageRequests(){
-    const { user, isAuthenticated } = useAuth0();
+    const { user } = useAuth0();
     const [requests, setRequests] = useState([]);
     const [errorMessage, setError] = useState("");
     const [slot1, setSlot1] = useState("");
@@ -24,7 +24,7 @@ export function TutorMessageRequests(){
             body: JSON.stringify(user.sub.substring(6))
         }).then(res => res.json())
             .then(data => {
-                if (data != "") setRequests(data);
+                setRequests(data);
             });
     }
     const messageChange = (e) => {
@@ -70,6 +70,7 @@ export function TutorMessageRequests(){
                     setSlot3("");
                     setSlot4("");
                     setSlot5("");
+                    setMessage("");
                 });
         } else {
             setError("All fields should be filled in to submit the request!")
@@ -97,37 +98,45 @@ export function TutorMessageRequests(){
     }
     return (
         <div>
-            <h3>List of Students</h3>
+            <h3>Tutoring Requests by students</h3>
             <p className="text-primary">{errorMessage}</p>
             <div>
-                {
+                {(Object.keys(requests).length > 0) ?
                     requests.map((r, index) => 
                         <div key={index}>
                             <CustomAccordion title={r.Name}
                                 content={
                                     <div>
-                                        <p>School - {r.School}</p>
-                                        <p>Program - {r.Program}</p>
-                                        <p>Semester - {r.Semester}</p>
-                                        <p>Course Name - {r.CourseName}</p>
-                                        <p>Days - { }</p>
-                                        <p>Message - { r.Message}</p>
+                                        <p><strong>School</strong> - {r.School}</p>
+                                        <p><strong>Program</strong> - {r.Program}</p>
+                                        <p><strong>Semester</strong> - {r.Semester}</p>
+                                        <p><strong>Course Name</strong> - {r.CourseName}</p>
+                                        <p><strong>Days</strong> -
+                                            {((r.Days[0] == 1) ? <a>[Sunday]</a> : <a></a>)}
+                                            { ((r.Days[1] == 1) ? <a>[Monday]</a> : <a></a>)}
+                                            { ((r.Days[2] == 1) ? <a>[Tuesday]</a> : <a></a>)}
+                                            { ((r.Days[3] == 1) ? <a>[Wednsday]</a> : <a></a>)}
+                                            { ((r.Days[4] == 1) ? <a>[Thursday]</a> : <a></a>)}
+                                            { ((r.Days[5] == 1) ? <a>[Friday]</a> : <a></a>)}
+                                            {((r.Days[6] == 1) ? <a>[Saturday]</a> : <a></a>)}
+                                        </p>
+                                        <p><strong>Message</strong> - { r.Message}</p>
 
                                         <p><input type="datetime-local" value={slot1} onChange={timeSlot1Changed} min="2022-01-01T00:00" max="2023-12-31T00:00" /></p>
                                         <p><input type="datetime-local" value={slot2} onChange={timeSlot2Changed} min="2022-01-01T00:00" max="2023-12-31T00:00" /></p>
                                         <p><input type="datetime-local" value={slot3} onChange={timeSlot3Changed} min="2022-01-01T00:00" max="2023-12-31T00:00" /></p>
                                         <p><input type="datetime-local" value={slot4} onChange={timeSlot4Changed} min="2022-01-01T00:00" max="2023-12-31T00:00" /></p>
                                         <p><input type="datetime-local" value={slot5} onChange={timeSlot5Changed} min="2022-01-01T00:00" max="2023-12-31T00:00" /></p>
-                                        <p>Enter a message for student: </p>
-                                        <input type="text" value={message} onChange={messageChange} />
-                                        <button onClick={(e) => sendTimeSlots(r.Id, slot1, slot2, slot3, slot4, slot5, e)}>Send Time Slots to Student</button>
-                                        <button onClick={(e) => reportUser(r.StudId, e) }>Report User</button>
+                                        <p><strong>Enter a message for student</strong> </p>
+                                        <p><input type="text" value={message} onChange={messageChange} /></p>
+                                        <button className="btn btn-info mr-3" onClick={(e) => sendTimeSlots(r.Id, slot1, slot2, slot3, slot4, slot5, e)}>Send Time Slots to Student</button>
+                                        <button className="btn btn-info" onClick={(e) => reportUser(r.StudId, e) }>Report User</button>
                                     </div>
                                 } />
                             <br />
                             
                         </div>
-                    )
+                    ):<p>No Tutoring requests for now!</p>
                 }
             </div>
         </div>

@@ -10,9 +10,9 @@ export class CustomAccordion extends Component{
                     <AccordionSummary
                         aria-controls="panel1a-content"
                     >
-                        <h4>
+                        <h3>
                             {this.props.title}
-                        </h4>
+                        </h3>
 
                     </AccordionSummary>
                     <AccordionDetails>

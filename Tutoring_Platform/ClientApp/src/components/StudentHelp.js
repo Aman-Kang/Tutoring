@@ -39,7 +39,7 @@ export function StudentHelp() {
                 rows={5}
                 cols={50}
             /></p>
-            <button onClick={AskQuery}>Send</button>
+            <button className="btn btn-info" onClick={AskQuery}>Send</button>
             <p className="text-primary">{errorMessage}</p>
         </div>
     );

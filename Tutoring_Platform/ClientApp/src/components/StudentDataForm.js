@@ -84,32 +84,43 @@ export function StudentDataForm(props) {
     }
 
     return (
-        <div>
-            <form onSubmit={submitForm}>
-                <div className="row">
-                    <div className="col-6">
-                        <p>Name: <input type="text" value={name} onChange={nameChange} /></p>
-                        <p>Address: <input type="text" value={address} onChange={addressChange} /></p>
-                        <p>City: <input type="text" value={city} onChange={cityChange} /></p>
-                        <p>Postal Code: <input type="text" value={postal} onChange={postalChange} /></p>
-                        <p>Province: <input type="text" value={province} onChange={provinceChange} /></p>
-                        
+        <div className="row">
+            <div className="col">
+                <form onSubmit={submitForm}>
+                    <div className="row">
+                        <div className="col-6">
+                            <p><strong>Name</strong>: <input type="text" value={name} onChange={nameChange} /></p>
+                            <p><strong>Address</strong>: <input type="text" value={address} onChange={addressChange} /></p>
+                            <p><strong>City</strong>: <input type="text" value={city} onChange={cityChange} /></p>
+                            <p><strong>Postal Code</strong>: <input type="text" value={postal} onChange={postalChange} /></p>
+                            <p><strong>Province</strong>: <select value={province} onChange={provinceChange}>
+                                <option value="Alberta">Alberta</option>
+                                <option value="British Columbia">British Columbia</option>
+                                <option value="Manitoba">Manitoba</option>
+                                <option value="New Brunswick">New Brunswick</option>
+                                <option value="Newfoundland and Labrador" >Newfoundland and Labrador</option>
+                                <option value="Northwest Territories">Northwest Territories</option>
+                                <option value="Nova Scotia">Nova Scotia</option>
+                                <option value="Nunavut">Nunavut</option>
+                                <option value="Ontario" >Ontario</option>
+                                <option value="Prince Edward Island">Prince Edward Island</option>
+                                <option value="Quebec">Quebec</option>
+                                <option value="Saskatchewan">Saskatchewan</option>
+                                <option value="Yukon">Yukon</option>
+                            </select></p>
+                            <button className="btn btn-info">Submit</button>
+                            <p className="text-primary">{errorMessage}</p>
+                        </div>
+                        <div className="col-6">
+                            <p><strong>School</strong>: <input type="text" value={school} onChange={schoolChange} /></p>
+                            <p><strong>Field of Study</strong>: <input type="text" value={field} onChange={fieldChange} /></p>
+                            <p><strong>Program Name</strong>: <input type="text" value={program} onChange={programChange} /></p>
+                            <p><strong>Semester</strong>: <input type="number" value={semester} onChange={semesterChange} /> Enter 0 if you have graduated</p>
+                        </div>
                     </div>
-                    <div className="col-6">
-                        <p>School: <input type="text" value={school} onChange={schoolChange} /></p>
-                        <p>Field of Study: <input type="text" value={field} onChange={fieldChange} /></p>
-                        <p>Program Name: <input type="text" value={program} onChange={programChange} /></p>
-                        <p>Semester: <input type="number" value={semester} onChange={ semesterChange} /> Enter 0 if you have graduated</p>
-                    </div>
-                    
-                </div>
-                <div className="row">
-                    <button>Submit</button>
-                </div>
-                <div className="row">
-                    <p className="text-primary">{errorMessage}</p>
-                </div>
-            </form>
+                   
+                </form>
+            </div>
         </div>
     )
     

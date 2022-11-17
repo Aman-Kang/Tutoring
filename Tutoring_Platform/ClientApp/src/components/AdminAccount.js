@@ -31,8 +31,8 @@ export function AdminAccount() {
         <div>
             < div className="row" >
                 <div className="col">
-                    <p>Name: {name }</p>
-                    <p>Email: { email}</p>
+                    <p><strong>Name</strong> - {name }</p>
+                    <p><strong>Email</strong> - { email}</p>
                     
                 </div>
                 

@@ -40,18 +40,18 @@ export function AdminReportAcct(){
         <div>
             <h3>Reported Accounts</h3>
             <p className="text-primary">{error}</p>
-            {accounts.map((a, index) =>
+            {(accounts !=[])?accounts.map((a, index) =>
                 <div key={index}>
                     <CustomAccordion title={a.Name}
                         content={
                             <div>
-                                <p>Reported By - {a.By}</p>
-                                <button onClick={(e) => deleteUser(a.AccountId, e)}>Delete Reported User</button>
+                                <p><strong>Reported By</strong> - {a.By}</p>
+                                <button className="btn btn-info" onClick={(e) => deleteUser(a.AccountId, e)}>Delete Reported User</button>
                             </div>
                         } />
                     <br />
                 </div>
-            )
+            ):<p>No account report requests at this moment!</p>
             }
         </div>
     );

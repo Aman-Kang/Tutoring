@@ -1,4 +1,4 @@
-import { Home } from "./components/Home";
+import { HomeOut } from "./components/HomeOut";
 import { StudentAppointments } from "./components/StudentAppointments";
 import { StudentLookForTutor } from "./components/StudentLookForTutor";
 import { StudentHelp } from "./components/StudentHelp";
@@ -14,8 +14,8 @@ import { AdminAccount } from "./components/AdminAccount";
 
 const AppRoutes = [
       {
-        index: '/home',
-        element: <Home />
+        path: '/',
+        element: <HomeOut />
     },
     {
         path: '/student-appointments',

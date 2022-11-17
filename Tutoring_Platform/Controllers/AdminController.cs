@@ -288,6 +288,10 @@ namespace Tutoring_Platform.Controllers
                 foreach (var u in userAccount)
                 {
                     db.Users.Remove(u);
+                    //Statistics
+
+
+
                 }
                 db.SaveChanges();
                 return "Account deleted";
@@ -308,17 +312,34 @@ namespace Tutoring_Platform.Controllers
             try
             {
                 List<GetStats> getStats = new List<GetStats>();
-                var statistics = from st in db.Statistics
-                                 select st;
-                foreach(Statistic st in statistics)
+                var users = from u in db.Users
+                            select u;
+                GetStats stats = new GetStats
                 {
-                    GetStats stats = new GetStats
-                    {
-                        Name = st.Name,
-                        Data = st.Data
-                    };
-                    getStats.Add(stats);
-                }
+                    Name = "Total number of Users",
+                    Data = users.Count().ToString()
+                };
+                getStats.Add(stats);
+
+                var students = from u in db.Users
+                               where u.Role == "student"
+                               select u;
+                stats = new GetStats
+                {
+                    Name = "Total number of Students",
+                    Data = students.Count().ToString()
+                };
+                getStats.Add(stats);
+
+                var tutors = from u in db.Users
+                             where u.Role == "tutor"
+                             select u;
+                stats = new GetStats
+                {
+                    Name = "Total number of Tutors",
+                    Data = tutors.Count().ToString()
+                };
+                getStats.Add(stats);
                 jsonResults = JsonConvert.SerializeObject(getStats);
                 return jsonResults;
             }

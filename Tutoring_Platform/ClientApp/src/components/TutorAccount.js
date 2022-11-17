@@ -204,13 +204,13 @@ export function TutorAccount() {
         <div>
             < div className="row" >
                 <div className="col">
-                    < p >Name: {name}</ p >
-                    < p >Email: {user.email}</ p >
-                    <p>Address: <input type="text" value={address} onChange={addressChange} /></p>
-                    <p>City: <input type="text" value={city} onChange={cityChange} /></p>
-                    <p>Postal Code: <input type="text" value={postal} onChange={postalChange} /></p>
-                    <p>Province: <input type="text" value={province} onChange={provinceChange} /></p>
-                    <p>Workdays: </p>
+                    < p ><strong>Name</strong> {name}</ p >
+                    < p ><strong>Email</strong> {user.email}</ p >
+                    <p><strong>Address</strong> <input type="text" value={address} onChange={addressChange} /></p>
+                    <p><strong>City</strong> <input type="text" value={city} onChange={cityChange} /></p>
+                    <p><strong>Postal Code</strong> <input type="text" value={postal} onChange={postalChange} /></p>
+                    <p><strong>Province</strong> <input type="text" value={province} onChange={provinceChange} /></p>
+                    <p><strong>Workdays</strong> </p>
                     <p><input type="checkbox" value="sunday" onChange={sundayChange} checked={sunday == 1} /> Sunday</p>
                     <p><input type="checkbox" value="monday" onChange={mondayChange} checked={monday == 1} /> Monday</p>
                     <p><input type="checkbox" value="tuesday" onChange={tuesdayChange} checked={tuesday == 1} /> Tuesday</p>
@@ -218,25 +218,21 @@ export function TutorAccount() {
                     <p><input type="checkbox" value="thursday" onChange={thursdayChange} checked={thursday == 1} /> Thursday</p>
                     <p><input type="checkbox" value="friday" onChange={fridayChange} checked={friday == 1} /> Friday</p>
                     <p><input type="checkbox" value="saturday" onChange={saturdayChange} checked={saturday == 1} /> Saturday</p>
+                    <button className="btn btn-info" onClick={updateInfo}>Update</button>
+                    <p className="text-primary">{errorMessage}</p>
                 </div>
                 <div className="col">
-                    < p >School: <input type="text" value={school} onChange={schoolChange} /></ p >
-                    < p >Field of Study: <input type="text" value={field} onChange={fieldChange} /></ p >
-                    <p>Program: <input type="text" value={program} onChange={programChange} /></p>
-                    <p>Semester: <input type="text" value={semester} onChange={semesterChange} /></p>
-                    <p>Subjects: </p>
+                    < p ><strong>School</strong> <input type="text" value={school} onChange={schoolChange} /></ p >
+                    < p ><strong>Field of Study</strong> <input type="text" value={field} onChange={fieldChange} /></ p >
+                    <p><strong>Program</strong> <input type="text" value={program} onChange={programChange} /></p>
+                    <p><strong>Semester</strong> <input type="text" value={semester} onChange={semesterChange} /></p>
+                    <p><strong>Subjects</strong> </p>
                     <p><input type="text" value={subject1} onChange={subjectChange1} /></p>
                     <p><input type="text" value={subject2} onChange={subjectChange2} /></p>
                     <p><input type="text" value={subject3} onChange={subjectChange3} /></p>
-                    <p>Hourly wage: <input type="text" value={wage} onChange={wageChange} /></p>
+                    <p><strong>Hourly wage</strong> <input type="text" value={wage} onChange={wageChange} /></p>
                 </div>
             </ div >
-            <div className="row">
-                <button onClick={updateInfo}>Update</button>
-            </div>
-            <div className="row">
-                <p className="text-primary">{errorMessage}</p>
-            </div>
         </div>
     );
     
