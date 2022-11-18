@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace Tutoring_Platform.Models
 {
+    /// <summary>
+    /// StudTutorInfo stores the data related to both students and tutors
+    /// </summary>
     public partial class StudTutorInfo
     {
         public StudTutorInfo()

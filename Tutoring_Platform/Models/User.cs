@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace Tutoring_Platform.Models
 {
+    /// <summary>
+    /// User class holds the users high level data in the database
+    /// </summary>
     public partial class User
     {
         public User()

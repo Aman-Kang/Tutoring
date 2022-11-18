@@ -2,6 +2,10 @@
 import Accordion from "@material-ui/core/Accordion";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
+/**
+ * The following class is created to be used as a shared component on all pages wherever list display
+ * is needed
+ * */
 export class CustomAccordion extends Component{
     render() {
         return (
@@ -10,9 +14,9 @@ export class CustomAccordion extends Component{
                     <AccordionSummary
                         aria-controls="panel1a-content"
                     >
-                        <h3>
+                        <h4>
                             {this.props.title}
-                        </h3>
+                        </h4>
 
                     </AccordionSummary>
                     <AccordionDetails>

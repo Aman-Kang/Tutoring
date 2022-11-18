@@ -1,18 +1,23 @@
-﻿import React, { Component } from 'react';
+﻿import React from 'react';
 import { CustomAccordion } from './CustomAccordion';
 import { useEffect,useState } from 'react';
 import { useAuth0 }
     from "@auth0/auth0-react";
 
-
+/**
+ * Admin can check user messages and reply to those messages on this page. This component is imported in NavBar.js
+ * */
 export function AdminUserMsg(){
     const { user, isAuthenticated } = useAuth0();
     const [errorMessage, setError] = useState("");
     const [queries, setQueries] = useState([]);
-    const [reply, setReply] = useState([]);
+    const [reply, setReply] = useState("");
 
     useEffect(() => {
-        getQueries();
+        if (isAuthenticated) {
+            getQueries();
+        }
+        
     }, []);
     const getQueries = () => {
         fetch('admin/GetQueries', {
@@ -23,14 +28,14 @@ export function AdminUserMsg(){
             body: JSON.stringify(user.sub.substring(6))
         }).then(res => res.json())
             .then(data => {
-                if (data != "") setQueries(data);
+                setQueries(data);
             });
     }
     const replyChange = (e) => {
         setReply(e.target.value);
     }
     function sendReply(queryId) {
-        if (reply != "") {
+        if (reply.trim() != "") {
             setError("");
             fetch('admin/SendReply', {
                 method: 'POST',
@@ -40,7 +45,7 @@ export function AdminUserMsg(){
                 body: JSON.stringify({
                     queryId: queryId,
                     userId: user.sub.substring(6),
-                    query: reply
+                    query: reply.trim()
                 })
             }).then(res => res.text())
                 .then(data => {
@@ -56,7 +61,7 @@ export function AdminUserMsg(){
         <div>
             <h3>User Messages</h3>
             <p className="text-primary">{errorMessage}</p>
-            {(queries != [])?queries.map((q, index) =>
+            {(Object.keys(queries).length > 0) ? queries.map((q, index) =>
                 <div key={index}>
                     <CustomAccordion title={q.UserId}
                         content={

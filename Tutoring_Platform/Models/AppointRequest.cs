@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace Tutoring_Platform.Models
 {
+    /// <summary>
+    /// AppointRequest is a data class that stores the appointment requests made by the students.
+    /// </summary>
     public partial class AppointRequest
     {
         public AppointRequest()

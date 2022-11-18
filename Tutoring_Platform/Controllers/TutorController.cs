@@ -3,11 +3,12 @@ using System.Linq;
 using Newtonsoft.Json;
 using Tutoring_Platform.Models;
 using Tutoring_Platform.CustomModels;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 
 namespace Tutoring_Platform.Controllers
 {
+    /// <summary>
+    /// Any calls made on tutor side which are not similar to student side are addressed by the tutor controller
+    /// </summary>
     [ApiController]
     [Route("tutor")]
     public class TutorController : ControllerBase
@@ -18,14 +19,19 @@ namespace Tutoring_Platform.Controllers
             db = dbModel;
         }
         
+        /// <summary>
+        /// Gets the tutoring requests made by the students stored in the AppointRequests table
+        /// </summary>
+        /// <param name="userId">The id of logged in tutor</param>
+        /// <returns>JSON Object List of the tutoring requests data</returns>
         [Route("GetTutorRequests")]
         [HttpPost]
         public string GetTutorRequests([FromBody] string userId)
         {
-            int user = Convert.ToInt32(userId);
             string jsonResults = "";
             try
             {
+                int user = Convert.ToInt32(userId);
                 IEnumerable<int> studId = from sti in db.StudTutorInfos
                                           where sti.UserId == user
                                           select sti.Id;
@@ -72,6 +78,13 @@ namespace Tutoring_Platform.Controllers
             
         }
 
+        /// <summary>
+        /// When tutor receives the tutoring requests, then tutor can send appointment time slots to the student
+        /// This method creates a new record in the AppointSlots table where the five slots submitted by the tutor
+        /// are stored
+        /// </summary>
+        /// <param name="sendAppointSlots">The slots submitted by tutor</param>
+        /// <returns>Success or failure message that tells the tutor if the time slots have been sent.</returns>
         [Route("SendAppointSlots")]
         [HttpPost]
         public string SendAppointSlots([FromBody] SendAppointSlots sendAppointSlots)
@@ -147,15 +160,20 @@ namespace Tutoring_Platform.Controllers
             
         }
 
+        /// <summary>
+        /// When student confirms an appointment then this method sets that selected appointment time slot to true
+        /// in database. This method gets the selected appointment slot from database
+        /// </summary>
+        /// <param name="userId">The id of the tutor logged in</param>
+        /// <returns>The JSON Object list of the confirmed appointments with selected slot</returns>
         [Route("GetConfirmedAppointments")]
         [HttpPost]
         public string GetConfirmedAppointments([FromBody] string userId)
         {
-            int user = Convert.ToInt32(userId);
             string jsonResults = "";
-            
             try
             {
+                int user = Convert.ToInt32(userId);
                 IEnumerable<int> studId = from sti in db.StudTutorInfos
                                           where sti.UserId == user
                                           select sti.Id;
@@ -196,6 +214,12 @@ namespace Tutoring_Platform.Controllers
             
         }
 
+        /// <summary>
+        /// When the tutor submits the meeting link and paypal link to the student, then this method creates a new record
+        /// in the AppointConfirm table of the database
+        /// </summary>
+        /// <param name="appoints">The appointment data submitted by tutor</param>
+        /// <returns>Success or failure message</returns>
         [Route("AddToAppoints")]
         [HttpPost]
         public string AddToAppoints([FromBody] AddToAppoints appoints)
@@ -230,6 +254,12 @@ namespace Tutoring_Platform.Controllers
             }
         }
 
+        /// <summary>
+        /// The final appointment that has all the information is stored in AppointConfirm table and this method
+        /// retreives that appointment data
+        /// </summary>
+        /// <param name="userId">The id of the tutor logged in</param>
+        /// <returns>The JSON Object list of the confirmed appointments</returns>
         [Route("GetAppointments")]
         [HttpPost]
         public string GetAppointments([FromBody] string userId)
@@ -284,14 +314,19 @@ namespace Tutoring_Platform.Controllers
             }
         }
 
+        /// <summary>
+        /// Gets the profile data of the tutor from database
+        /// </summary>
+        /// <param name="userId">The id of logged in tutor</param>
+        /// <returns>Returns profile data</returns>
         [Route("GetInfo")]
         [HttpPost]
         public string GetInfo([FromBody] string userId)
         {
-            int user = Convert.ToInt32(userId);
             string jsonResults = "";
             try
             {
+                int user = Convert.ToInt32(userId);
                 List<TutorParam> results = new List<TutorParam>();
                 var tutor = (from ti in db.TutorInfos
                              where ti.User.UserId == user
@@ -346,6 +381,11 @@ namespace Tutoring_Platform.Controllers
             }
         }
 
+        /// <summary>
+        /// Updates the profile info of the tutor by using the newly submitted data by the tutor.
+        /// </summary>
+        /// <param name="tutor">The data submitted by tutor</param>
+        /// <returns>Success or failure message</returns>
         [Route("UpdateInfo")]
         [HttpPost]
         public string UpdateInfo([FromBody] TutorParam tutor)
@@ -394,19 +434,8 @@ namespace Tutoring_Platform.Controllers
                                       select tc).ToArray();
                     for(int i = 0; i < tutor.Subjects.Length; i++)
                     {
-                        if(i < getCourses.Length)
-                        {
-                            getCourses[i].Course = tutor.Subjects[i];
-                        }
-                        else
-                        {
-                            TutorCourse tutorCourse = new TutorCourse
-                            {
-                                TutorId = getTutor.First().Id,
-                                Course = tutor.Subjects[i]
-                            };
-                            db.TutorCourses.Add(tutorCourse);
-                        }
+                        getCourses[i].Course = tutor.Subjects[i];
+                        
                     }
                     db.SaveChanges();
                     var getDays = (from da in db.DaysAvailables
@@ -450,6 +479,11 @@ namespace Tutoring_Platform.Controllers
             
         }
 
+        /// <summary>
+        /// This method creates a new record in the ReportAccount table when the logged in tutor reports a student account 
+        /// </summary>
+        /// <param name="reportRequest">The data related to Reported account id and the id of user who is reporting</param>
+        /// <returns>Success or failure message</returns>
         [Route("ReportUser")]
         [HttpPost]
         public string ReportUser([FromBody] ReportAccountRequest reportRequest)
@@ -480,5 +514,6 @@ namespace Tutoring_Platform.Controllers
                 return "Could not send the report request!";
             }
         }
+
     }
 }

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace Tutoring_Platform.Models
 {
+    /// <summary>
+    /// AdminReply class is a data class that stores the replies from admin
+    /// </summary>
     public partial class AdminReply
     {
         public int Id { get; set; }

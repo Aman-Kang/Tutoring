@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Linq;
 using Newtonsoft.Json;
 using Tutoring_Platform.Models;
 using Tutoring_Platform.CustomModels;
-using Microsoft.AspNetCore.Authorization;
 
 namespace Tutoring_Platform.Controllers
 {
+    /// <summary>
+    /// All the API calls made on Admin side are handled by Admin Controller
+    /// </summary>
     [ApiController]
     [Route("admin")]
     public class AdminController : ControllerBase
@@ -16,59 +17,88 @@ namespace Tutoring_Platform.Controllers
         {
             db = dbModel;
         }
+
+        /// <summary>
+        /// Retreives the queries asked by the users from HelpQueries class and serialize them into json object.
+        /// </summary>
+        /// <param name="userId">Admin Id</param>
+        /// <returns>JSON Object of the queries data</returns>
         [Route("GetQueries")]
         [HttpPost]
         public string GetQueries([FromBody]string userId)
         {
             string jsonResults = "";
-            var queries = from hq in db.HelpQueries
-                              //where hq.responded == false
-                          select hq;
-            List<AskQuery> results = new List<AskQuery>();
-            if(queries.Count() > 0)
+            try
             {
-                foreach(var query in queries)
+                var queries = from hq in db.HelpQueries
+                              select hq;
+                List<AskQuery> results = new List<AskQuery>();
+                if (queries.Count() > 0)
                 {
-                    string getName = (from sti in db.StudTutorInfos
-                                  where sti.Id == query.UserId
-                                  select sti.User.Name).First();
-                    AskQuery askQuery = new AskQuery
+                    foreach (var query in queries)
                     {
-                        UserId = getName,
-                        Query = query.Query,
-                        QueryId = query.Id
-                    };
-                    results.Add(askQuery);
+                        string getName = (from sti in db.StudTutorInfos
+                                          where sti.Id == query.UserId
+                                          select sti.User.Name).First();
+                        AskQuery askQuery = new AskQuery
+                        {
+                            UserId = getName,
+                            Query = query.Query,
+                            QueryId = query.Id
+                        };
+                        results.Add(askQuery);
+                    }
+                    jsonResults = JsonConvert.SerializeObject(results);
                 }
-                jsonResults = JsonConvert.SerializeObject(results);
+                return jsonResults;
             }
-            return jsonResults;
+            catch
+            {
+                return jsonResults;
+            }
+            
         }
 
+        /// <summary>
+        /// Sends the reply to User for any specific query by creating a reply record in AdminReply class.
+        /// </summary>
+        /// <param name="reply">The reply entered by admin</param>
+        /// <returns>Success or failure message</returns>
         [Route("SendReply")]
         [HttpPost]
         public string SendReply([FromBody] AskQuery reply)
         {
-            if(reply.UserId != null && reply.QueryId != null && reply.Query != null)
+            try
             {
-                AdminReply adminReply = new AdminReply
+                if (reply.UserId != null && reply.QueryId != null && reply.Query != null)
                 {
-                    AdminId = Convert.ToInt32(reply.UserId),
-                    Message = reply.Query,
-                    QueryId = Convert.ToInt32(reply.QueryId)
-                };
-                db.AdminReplies.Add(adminReply);
-                db.SaveChanges();
+                    AdminReply adminReply = new AdminReply
+                    {
+                        AdminId = Convert.ToInt32(reply.UserId),
+                        Message = reply.Query,
+                        QueryId = Convert.ToInt32(reply.QueryId)
+                    };
+                    db.AdminReplies.Add(adminReply);
+                    db.SaveChanges();
+                    return "Reply Sent!";
+                }
                 return "Reply Sent!";
             }
-            return "Reply could not be sent!";
+            catch
+            {
+                return "Reply could not be sent!";
+            }
         }
 
+        /// <summary>
+        /// Retreives the reported accounts data from ReportAccounts class
+        /// </summary>
+        /// <param name="userId">The admin id</param>
+        /// <returns>The JSON object list of the reported accounts</returns>
         [Route("GetReportedAcc")]
         [HttpPost]
         public string GetReportedAcc([FromBody] string userId)
         {
-
             string jsonResults = "";
             try
             {
@@ -105,6 +135,11 @@ namespace Tutoring_Platform.Controllers
 
         }
 
+        /// <summary>
+        /// Deletes the user from database
+        /// </summary>
+        /// <param name="account">The account that has been reported and is displayed on the admin dashboard</param>
+        /// <returns>Success or failure message</returns>
         [Route("DeleteUser")]
         [HttpPost]
         public string DeleteUser([FromBody] GetReportAccount account)
@@ -288,15 +323,10 @@ namespace Tutoring_Platform.Controllers
                 foreach (var u in userAccount)
                 {
                     db.Users.Remove(u);
-                    //Statistics
-
-
-
                 }
                 db.SaveChanges();
                 return "Account deleted";
             }
-
             catch
             {
                 return "Account could not be deleted";
@@ -304,6 +334,11 @@ namespace Tutoring_Platform.Controllers
 
         }
 
+        /// <summary>
+        /// Get the users statistics to display on Admin side
+        /// </summary>
+        /// <param name="userId">The admin id</param>
+        /// <returns>The statistic data</returns>
         [Route("GetStats")]
         [HttpPost]
         public string GetStats([FromBody] string userId)
@@ -340,6 +375,31 @@ namespace Tutoring_Platform.Controllers
                     Data = tutors.Count().ToString()
                 };
                 getStats.Add(stats);
+
+                var usersProvince = db.StudTutorInfos
+                                    .GroupBy(s => s.Province)
+                                    .OrderByDescending(gs => gs.Count())
+                                    .Take(1)
+                                    .Select(s => s.Key).ToList();
+                stats = new GetStats
+                {
+                    Name = "Province with maximum users",
+                    Data = usersProvince.First()
+                };
+                getStats.Add(stats);
+
+                var usersField = db.StudTutorInfos
+                                    .GroupBy(s => s.StudyField)
+                                    .OrderByDescending(gs => gs.Count())
+                                    .Take(1)
+                                    .Select(s => s.Key).ToList();
+                stats = new GetStats
+                {
+                    Name = "Study Field with maximum users",
+                    Data = usersField.First()
+                };
+                getStats.Add(stats);
+
                 jsonResults = JsonConvert.SerializeObject(getStats);
                 return jsonResults;
             }
@@ -349,6 +409,11 @@ namespace Tutoring_Platform.Controllers
             }
         }
 
+        /// <summary>
+        /// Gets the admin profile info from database
+        /// </summary>
+        /// <param name="userId">Admin id</param>
+        /// <returns>The profile data</returns>
         [Route("GetInfo")]
         [HttpPost]
         public string GetInfo([FromBody] string userId)
@@ -378,7 +443,6 @@ namespace Tutoring_Platform.Controllers
             {
                 return jsonResults;
             }
-
         }
     }
 }

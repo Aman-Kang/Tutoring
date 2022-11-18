@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Tutoring_Platform.Models
 {
+    /// <summary>
+    /// This context class refers to the database structure
+    /// </summary>
     public partial class tutoringContext : DbContext
     {
         public tutoringContext()
@@ -23,7 +26,6 @@ namespace Tutoring_Platform.Models
         public virtual DbSet<DaysAvailable> DaysAvailables { get; set; } = null!;
         public virtual DbSet<HelpQuery> HelpQueries { get; set; } = null!;
         public virtual DbSet<ReportAccount> ReportAccounts { get; set; } = null!;
-        public virtual DbSet<Statistic> Statistics { get; set; } = null!;
         public virtual DbSet<StudTutorInfo> StudTutorInfos { get; set; } = null!;
         public virtual DbSet<TutorCourse> TutorCourses { get; set; } = null!;
         public virtual DbSet<TutorInfo> TutorInfos { get; set; } = null!;
@@ -31,6 +33,8 @@ namespace Tutoring_Platform.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            if (!optionsBuilder.IsConfigured)
+            {}
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -246,21 +250,6 @@ namespace Tutoring_Platform.Models
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_report_account_stud_tutor_info");
-            });
-
-            modelBuilder.Entity<Statistic>(entity =>
-            {
-                entity.ToTable("statistics");
-
-                entity.Property(e => e.Id).HasColumnName("id");
-
-                entity.Property(e => e.Data)
-                    .IsUnicode(false)
-                    .HasColumnName("data");
-
-                entity.Property(e => e.Name)
-                    .IsUnicode(false)
-                    .HasColumnName("name");
             });
 
             modelBuilder.Entity<StudTutorInfo>(entity =>

@@ -3,9 +3,11 @@ import {useEffect, useState } from 'react';
 import { useAuth0 }
     from "@auth0/auth0-react";
 import { CustomAccordion } from './CustomAccordion';
-
+/**
+ * Displays the upcoming appointments and any appointments for which the studnet has selected a slot.
+ * */
 export function TutorAppointments(){
-    const { user } = useAuth0();
+    const { user, isAuthenticated } = useAuth0();
     const [errorMessage, setError] = useState("");
     const [response, setResponse] = useState("");
     const [appointments, setAppointments] = useState([]);
@@ -34,7 +36,8 @@ export function TutorAppointments(){
     }
 
     function confirmAppoint(slotId) {
-        if (paypal != "" && zoom != "") {
+        setResponse("");
+        if (paypal.trim() != "" && zoom.trim() != "") {
             setError("");
             fetch('tutor/AddToAppoints', {
                 method: 'POST',
@@ -70,6 +73,8 @@ export function TutorAppointments(){
             });
     }
     function markAsDone(confirmId, appointmentDate) {
+        setError("");
+        setResponse("");
         var today = new Date();
         var year = parseInt(appointmentDate.substring(0, 4));
         var month = parseInt(appointmentDate.substring(5, 7));
@@ -90,21 +95,27 @@ export function TutorAppointments(){
                 body: JSON.stringify(String(confirmId))
             }).then(res => res.text())
                 .then(data => {
-                    window.location.reload(false);
                     setResponse(data);
+                    window.location.reload(false);
+                    getAppointments();
+                    displayAppoints();
                 });
         } else {
             setResponse("The appointment can only be marked as done if the appointment date and time has passed!")
         }
     }
     useEffect(() => {
-        getAppointments();
-        displayAppoints();
+        if (isAuthenticated) {
+            getAppointments();
+            displayAppoints();
+        }
+        
     }, []);
     return (
         <div>
             <p>It is your responsibility to check that the student has transferred the money to your account an hour before every session. If the transfer is not made, you can choose to not go to the session.</p>
             <h3>Upcoming Appointments</h3>
+            <p className="text-primary">{response}</p>
             {(Object.keys(appointmentsA).length > 0) ? appointmentsA.map((a, index) =>
                 <div key={index}>
                     <CustomAccordion title={a.Date.substring(0, 10)} 
@@ -130,13 +141,11 @@ export function TutorAppointments(){
                             content={
                                 <div>
                                     <p><strong>Course</strong> - {a.Course}</p>
-                                    <p><strong>Date and Time</strong> - {a.Slot}</p>
+                                    <p><strong>Date and Time</strong> - <a>{a.Slot.substring(0, 10)}</a> <a>{a.Slot.substring(11)}</a></p>
                                     <p><strong>Enter Paypal link</strong> - <input type="text" value={paypal} onChange={paypalChange} /></p>
-                                    <p><strong>Enter Zoom link</strong> - <input type="text" value={zoom} onChange={zoomChange} /></p>
+                                    <p><strong>Enter Meeting link</strong> - <input type="text" value={zoom} onChange={zoomChange} /></p>
                                     <button className="btn btn-info" onClick={(e) => confirmAppoint(a.Id, e)}>Add to upcoming appointments</button>
-                                    
                                 </div>
-
                             } />
                         <br />
                     </div>

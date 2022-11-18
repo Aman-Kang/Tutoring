@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace Tutoring_Platform.Models
 {
+    /// <summary>
+    /// AppointSlot is data class that stores the appointment time slots offered by the tutor.
+    /// </summary>
     public partial class AppointSlot
     {
         public AppointSlot()

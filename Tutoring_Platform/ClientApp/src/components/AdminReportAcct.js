@@ -3,14 +3,14 @@ import { useEffect, useState } from 'react';
 import { useAuth0 }
     from "@auth0/auth0-react";
 import { CustomAccordion } from './CustomAccordion';
-
+/**
+ * Admin Report Account page is created to view all the report account requests and is imported in NavBar.js
+ * */
 export function AdminReportAcct(){
     const { user, isAuthenticated } = useAuth0();
     const [error, setError] = useState("");
     const [accounts, setAccounts] = useState([]);
-    useEffect(() => {
-        getReportedAcc();
-    }, []);
+   
 
     const getReportedAcc = () => {
         fetch('admin/GetReportedAcc', {
@@ -21,7 +21,7 @@ export function AdminReportAcct(){
             body: JSON.stringify(user.sub.substring(6))
         }).then(res => res.json())
             .then(data => {
-                if (data != "") setAccounts(data);
+                setAccounts(data);
             });
     }
     function deleteUser(accountId) {
@@ -34,13 +34,21 @@ export function AdminReportAcct(){
         }).then(res => res.text())
             .then(data => {
                 setError(data);
+                window.location.reload(false);
+                getReportedAcc();
             });
     }
+    useEffect(() => {
+        if (isAuthenticated) {
+            getReportedAcc();
+        }
+        
+    }, []);
     return (
         <div>
             <h3>Reported Accounts</h3>
             <p className="text-primary">{error}</p>
-            {(accounts !=[])?accounts.map((a, index) =>
+            {(Object.keys(accounts).length > 0) ? accounts.map((a, index) =>
                 <div key={index}>
                     <CustomAccordion title={a.Name}
                         content={

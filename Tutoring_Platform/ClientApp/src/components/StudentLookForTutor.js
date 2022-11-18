@@ -1,12 +1,14 @@
-﻿import React, { Component } from 'react';
+﻿import React from 'react';
 import { useState } from 'react';
 import { CustomAccordion } from './CustomAccordion';
 import { useAuth0 }
     from "@auth0/auth0-react";
 
-
+/**
+ * Student can search for tutors on this page by submitting the course name and the days available information
+ * 
+ * */
 export function StudentLookForTutor() {
-
     const { user } = useAuth0();
     const [courseName, setCourseName] = useState("");
     const [errorMessage, setError] = useState("");
@@ -105,6 +107,7 @@ export function StudentLookForTutor() {
 
     const searchForTutors = () => {
         setError("");
+        setResponse("");
         setTutors([]);
         fetch('student/SearchTutors', {
             method: 'POST',
@@ -131,6 +134,8 @@ export function StudentLookForTutor() {
     }
 
     function sendTutorRequest(courseName, days, tutorId, studId) {
+        setResponse("");
+        setError("");
         fetch('student/SendTutorRequest', {
             method: 'POST',
             headers: {
@@ -149,6 +154,8 @@ export function StudentLookForTutor() {
             });
     }
     function reportUser(tutorId) {
+        setResponse("");
+        setError("");
         fetch('student/ReportUser', {
             method: 'POST',
             headers: {
@@ -163,6 +170,7 @@ export function StudentLookForTutor() {
                 setResponse(data);
             });
     }
+
     return (
         <div>
             <p>Enter the below mentioned details so that we can find you a perfect tutor!</p>
@@ -187,32 +195,15 @@ export function StudentLookForTutor() {
                 </div>
                 <div classname="row">
                     <div className="col-2">
-                        <button className="btn btn-info">Submit</button>
+                        <button className="btn btn-info">Search</button>
                     </div>
                 </div>
             </form>
             
             <h4>List of tutors based on your search:</h4>
-            <p>Filters</p>
+            <br/>
             <div className="row">
-                <div className="col-3">
-                    <p>Status</p>
-                    <p></p>
-                </div>
-                <div className="col-3">
-                    <p>Wage</p>
-                    <p></p>
-                </div>
-                <div className="col-3">
-                    <p>School</p>
-                    <p></p>
-                </div>
-                <div className="col-3">
-                    <p>Program</p>
-                    <p></p>
-                </div>
-                
-                <div>
+                <div className="col-12">
                     <p className="text-primary">{response}</p>
                     {(Object.keys(tutors).length > 0)?tutors.map((t, index) =>
                         <div key={index}>
@@ -223,8 +214,13 @@ export function StudentLookForTutor() {
                                         <p><strong>Status</strong> - {t.Status}</p>
                                         <p><strong>Wage</strong> - ${t.Wage}</p>
                                         <p><strong>Enter a message for tutor</strong>: </p>
-                                        <p><input type="text" value={message} onChange={messageChange} /></p>
-                                        <button className="btn btn-info mr-3" onClick={(e) => sendTutorRequest(t.CourseName, t.Days, t.tutorId, t.studId, e)}>Send Tutor Request</button>
+                                        <p><textarea
+                                            value={message}
+                                            onChange={messageChange}
+                                            rows={2}
+                                            cols={50}
+                                        /></p>
+                                        <button className="btn btn-info mr-10" onClick={(e) => sendTutorRequest(t.CourseName, t.Days, t.tutorId, t.studId, e)}>Send Tutor Request</button><a> </a>
                                         <button className="btn btn-info" onClick={(e) => reportUser(t.tutorId, e)}>Report User</button>
                                     </div>
                                 } />

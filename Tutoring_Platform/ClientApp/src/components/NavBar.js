@@ -8,10 +8,12 @@ import LogoutButton from './LogoutButton';
 import LoginButton from './LoginButton';
 import RegisterButton from './RegisterButton';
 import { StudentDataForm } from './StudentDataForm';
-
 import { useAuth0 }
     from "@auth0/auth0-react";
-
+/**
+ * This function defines the whole navbar used in the site. This navbar controls the user's ability to navigate on site
+ * depending on their Role.
+ * */
 export function NavBar(){
     const [collapsed, setCollapsed] = useState(true);
     const [role, setRole] = useState("");
@@ -22,7 +24,6 @@ export function NavBar(){
     }
 
     const findRole = () => {
-        
         fetch('student/FindRole', {
             method: 'POST',
             headers: {
@@ -47,11 +48,15 @@ export function NavBar(){
                 if (data != "") setShowDialog(data);
             });
     }
-    
+
+
     if (isAuthenticated) {
         findRole();
         if (role == "student") {
             isUserCreated();
+            //If showDialog is 0, that means the user record has been created in the StudTutorInfo table, hence they should see regular NavBar
+            //If showDialog is 1, that means the record is not created for user in StudTutorInfo table, hence they should not see their regular NavBar
+            //but instead they should see a Profile Create form.
             if (showDialog == 1) {
                 return (
                     <div>
@@ -132,7 +137,10 @@ export function NavBar(){
                             </Navbar>
                         </header>
 
-                        <StudentDataForm role={role }/>
+                        <Container>
+                            <h4>Enter all details to complete your profile</h4>
+                            <StudentDataForm role={role} />
+                        </Container>
                     </div>
                 );
             }

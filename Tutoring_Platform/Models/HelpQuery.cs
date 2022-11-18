@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace Tutoring_Platform.Models
 {
+    /// <summary>
+    /// HelpQuery holds the data related to help queries submitted by users
+    /// </summary>
     public partial class HelpQuery
     {
         public HelpQuery()

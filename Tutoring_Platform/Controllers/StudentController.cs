@@ -5,6 +5,10 @@ using Tutoring_Platform.CustomModels;
 
 namespace Tutoring_Platform.Controllers
 {
+    /// <summary>
+    /// Any API Calls made on student side are handled in the student controller. Any common API
+    /// calls made on student and tutor side are also addressed on the student controller.
+    /// </summary>
     [ApiController]
     [Route("student")]
     public class StudentController : ControllerBase
@@ -14,44 +18,77 @@ namespace Tutoring_Platform.Controllers
         {
             db = dbModel;
         }
-        //[Authorize("read:messages")]
+
+        /// <summary>
+        /// Find the role of the user logged into the application
+        /// </summary>
+        /// <param name="email">Email of the user logged in</param>
+        /// <returns>The role (student or tutor)</returns>
         [Route("FindRole")]
         [HttpPost]
         public string FindRole([FromBody] string email)
         {
             string role = "";
-            IEnumerable<string> userRole = from u in db.Users
-                                           where u.Email == email
-                                           select u.Role;
-
-            if (userRole != null)
+            try
             {
-                role = userRole.First();
+                IEnumerable<string> userRole = from u in db.Users
+                                               where u.Email == email
+                                               select u.Role;
+
+                if (userRole != null)
+                {
+                    role = userRole.First();
+                }
+                return role;
             }
-            return role;
+            catch
+            {
+                return role;
+            }
+            
         }
+
+        /// <summary>
+        /// Checks in the database if the logged in user's record has been created in the StudTutorInfo table
+        /// </summary>
+        /// <param name="userId">The id of the user logged in</param>
+        /// <returns>Returns 0 or 1 where 0 means the record is not created and 1 means that record is created</returns>
         [Route("UserCreated")]
         [HttpPost]
         public int UserCreated([FromBody] string userId)
         {
-            int id = Convert.ToInt32(userId);
+            
             int showDialog = 0;
-            IEnumerable<int> getId = (from sti in db.StudTutorInfos
-                                      where sti.UserId == id
-                                      select sti.Id);
-            System.Diagnostics.Debug.WriteLine(getId);
-            if (getId.Count() < 1)
+            try
             {
-                showDialog = 1;
+                int id = Convert.ToInt32(userId);
+                IEnumerable<int> getId = (from sti in db.StudTutorInfos
+                                          where sti.UserId == id
+                                          select sti.Id);
+                System.Diagnostics.Debug.WriteLine(getId);
+                if (getId.Count() < 1)
+                {
+                    showDialog = 1;
+                }
+                return showDialog;
             }
-            return showDialog;
+            catch
+            {
+                return showDialog;
+            }
+            
         }
 
+        /// <summary>
+        /// Creates a student and tutor record in the StudTutorInfo and TutorInfo tables
+        /// </summary>
+        /// <param name="studentParams">The data submitted by user related to different info fields of StudTutorInfo and TutorInfo tables</param>
+        /// <returns>Success or Failure message</returns>
         [Route("CreateStudent")]
         [HttpPost]
         public string CreateStudent([FromBody] ProfileData studentParams)
         {
-            string jsonResults = "";
+            string response = "";
             try
             {
                 if (studentParams.Name != null && studentParams.Address != null && studentParams.City != null && studentParams.Postal != null &&
@@ -108,21 +145,69 @@ namespace Tutoring_Platform.Controllers
                         };
                         db.TutorInfos.Add(tutor);
                         db.SaveChanges();
+
+
+                        int tutorId = (from ti in db.TutorInfos
+                                         where ti.UserId == getStudId
+                                         select ti.Id).First();
+                        
+                        DaysAvailable days = new DaysAvailable
+                        {
+                            UserId = tutorId,
+                            Sunday = 0,
+                            Monday = 0,
+                            Tuesday = 0,
+                            Wednesday = 0,
+                            Thursday = 0,
+                            Friday = 0,
+                            Saturday = 0
+                        };
+                        db.DaysAvailables.Add(days);
+                        db.SaveChanges();
+
+                        TutorCourse course1 = new TutorCourse
+                        {
+                            TutorId = tutorId,
+                            Course = ""
+                        };
+                        db.TutorCourses.Add(course1);
+                        db.SaveChanges();
+
+                        TutorCourse course2 = new TutorCourse
+                        {
+                            TutorId = tutorId,
+                            Course = ""
+                        };
+                        db.TutorCourses.Add(course2);
+                        db.SaveChanges();
+
+                        TutorCourse course3 = new TutorCourse
+                        {
+                            TutorId = tutorId,
+                            Course = ""
+                        };
+                        db.TutorCourses.Add(course3);
+                        db.SaveChanges();
                     }
-                    jsonResults = "Profile Created";
+                    response = "Profile Created";
                     
                 }
-                return jsonResults;
+                return response;
             }
             catch
             {
-                jsonResults = "Could not create profile";
-                return jsonResults;
+                response = "Could not create profile";
+                return response;
             }
         }
 
 
-        //[Authorize("read:messages")]
+        /// <summary>
+        /// When student submits the form to search for tutors, then this method sends the matching tutors back to frontend
+        /// by making a call another method (searchTutors)
+        /// </summary>
+        /// <param name="tutorParams">The course name and available days data submitted by student</param>
+        /// <returns>JSON object list of all the tutors that match with the student conditions</returns>
         [Route("SearchTutors")]
         [HttpPost]
         public string SearchTutors([FromBody] LookForTutorParam tutorParams)
@@ -160,50 +245,22 @@ namespace Tutoring_Platform.Controllers
             }
         }
 
-        [Route("SendTutorRequest")]
-        [HttpPost]
-        public string sendTutorRequest([FromBody] sendTutorRequestParam requestParam)
-        {
-            string jsonResults = "";
-            if (requestParam.CourseName != null && requestParam.Days != null && requestParam.studId != null && requestParam.tutorId != null)
-            {
-                AppointRequest aRequest = new AppointRequest
-                {
-                    TutorId = Convert.ToInt32(requestParam.tutorId),
-                    StudId = Convert.ToInt32(requestParam.studId),
-                    Course = requestParam.CourseName,
-                    Sunday = requestParam.Days[0],
-                    Monday = requestParam.Days[1],
-                    Tuesday = requestParam.Days[2],
-                    Wednesday = requestParam.Days[3],
-                    Thursday = requestParam.Days[4],
-                    Friday = requestParam.Days[5],
-                    Saturday = requestParam.Days[6],
-                    Message = requestParam.Message
-                };
-
-                db.AppointRequests.Add(aRequest);
-                try
-                {
-                    db.SaveChanges();
-                    jsonResults = "Request sent";
-                }
-                catch
-                {
-                    jsonResults = "Could not send Request";
-                }
-            }
-            return jsonResults;
-        }
-
+        /// <summary>
+        /// Searches for the tutors in the database by checking the courses that they teach in TutorCourse table and
+        /// the days that they are available in DaysAvailable table
+        /// </summary>
+        /// <param name="course">Course name submitted by student</param>
+        /// <param name="days">Days on which the student is available</param>
+        /// <param name="userId">The user id of the student logged in</param>
+        /// <returns>An array of the matching tutors data</returns>
         private string[,] searchTutors(string course, int[] days, int userId)
         {
             IEnumerable<TutorCourse> tutorCourses = (from t in db.TutorCourses
                                                      where t.Course.Contains(course)
-                                                     select t).ToList<TutorCourse>();
-            IEnumerable<TutorInfo> tutor = (from t in db.TutorInfos select t).ToList<TutorInfo>();
+                                                     select t).ToList();
+            IEnumerable<TutorInfo> tutor = (from t in db.TutorInfos select t).ToList();
             IEnumerable<StudTutorInfo> stud_Tutor_Info = (from sti in db.StudTutorInfos select sti).ToList<StudTutorInfo>();
-            IEnumerable<User> user_ = (from u in db.Users select u).ToList<User>();
+            IEnumerable<User> user_ = (from u in db.Users select u).ToList();
             List<DaysAvailable> daysAvailable = new List<DaysAvailable>();
             int studentDays = 0;
             foreach (int day in days)
@@ -249,18 +306,17 @@ namespace Tutoring_Platform.Controllers
                     daysAvailable.Add(d);
                 }
             }
-            Console.WriteLine(daysAvailable.ToArray().Length);
 
             IEnumerable<TutorInfo> tutorInfoList = (from ti in tutor
                                                     join tc in tutorCourses on ti.Id equals tc.TutorId
-                                                    select ti).ToList<TutorInfo>();
+                                                    select ti).ToList();
             IEnumerable<TutorInfo> tutorInfo = (from ti in tutorInfoList
                                                 join da in daysAvailable on ti.Id equals da.UserId
-                                                select ti).ToList<TutorInfo>();
+                                                select ti).ToList();
 
             IEnumerable<StudTutorInfo> studTutorInfo = (from sti in stud_Tutor_Info
                                                         join ti in tutorInfo on sti.Id equals ti.UserId
-                                                        select sti).ToList<StudTutorInfo>();
+                                                        select sti).ToList();
 
             IEnumerable<User> user = from u in user_
                                      join sti in studTutorInfo on u.Id equals sti.UserId
@@ -268,8 +324,8 @@ namespace Tutoring_Platform.Controllers
 
             IEnumerable<StudTutorInfo> studTutorInfo2 = (from sti in stud_Tutor_Info
                                                          where sti.UserId == userId
-                                                         select sti).ToList<StudTutorInfo>();
-            string[,] returnValue = new String[user.Count(), 7];
+                                                         select sti).ToList();
+            string[,] returnValue = new string[user.Count(), 7];
 
             int i = 0;
             foreach (var u in user)
@@ -307,14 +363,62 @@ namespace Tutoring_Platform.Controllers
             return returnValue;
         }
 
+        /// <summary>
+        /// When the student clicks the buttons to send tutoring request to a tutors then this method is called
+        /// It creates a record about the request in AppointRequest table
+        /// </summary>
+        /// <param name="requestParam">The parameters required to create a new row in AppointRequest table</param>
+        /// <returns>Success or failure message</returns>
+        [Route("SendTutorRequest")]
+        [HttpPost]
+        public string sendTutorRequest([FromBody] sendTutorRequestParam requestParam)
+        {
+            string jsonResults = "";
+            if (requestParam.CourseName != null && requestParam.Days != null && requestParam.studId != null && requestParam.tutorId != null)
+            {
+                AppointRequest aRequest = new AppointRequest
+                {
+                    TutorId = Convert.ToInt32(requestParam.tutorId),
+                    StudId = Convert.ToInt32(requestParam.studId),
+                    Course = requestParam.CourseName,
+                    Sunday = requestParam.Days[0],
+                    Monday = requestParam.Days[1],
+                    Tuesday = requestParam.Days[2],
+                    Wednesday = requestParam.Days[3],
+                    Thursday = requestParam.Days[4],
+                    Friday = requestParam.Days[5],
+                    Saturday = requestParam.Days[6],
+                    Message = requestParam.Message
+                };
+
+                db.AppointRequests.Add(aRequest);
+                try
+                {
+                    db.SaveChanges();
+                    jsonResults = "Request sent";
+                }
+                catch
+                {
+                    jsonResults = "Could not send Request";
+                }
+            }
+            return jsonResults;
+        }
+
+        /// <summary>
+        /// Any requests that has been accepted by the tutor and for which the tutor has submitted time slots
+        /// are retreived from the AppointSlots table
+        /// </summary>
+        /// <param name="userId">The id of the user logged in</param>
+        /// <returns>The JSON Object list of the accepted requests with time slots</returns>
         [Route("DisplayRequests")]
         [HttpPost]
         public string DisplayRequests([FromBody] string userId)
         {
-            int user = Convert.ToInt32(userId);
             string jsonResults = "";
             try
             {
+                int user = Convert.ToInt32(userId);
                 IEnumerable<int> studId = from sti in db.StudTutorInfos
                                           where sti.UserId == user
                                           select sti.Id;
@@ -365,38 +469,53 @@ namespace Tutoring_Platform.Controllers
             }
             
         }
+
+        /// <summary>
+        /// When student picks one slot out of the all the slots sent by tutor, the this method is called. It updates
+        /// that one selected slot row in the database by setting the selected field to true
+        /// </summary>
+        /// <param name="slot">The selected slot's id</param>
+        /// <returns>Success or failure message that tells the user if the slot was successfully selected.</returns>
         [Route("SendConfirmedSlot")]
         [HttpPost]
         public string SendConfirmedSlot([FromBody] string slot)
         {
-            int slotId = Convert.ToInt32(slot);
-            if (slotId > 0)
+            try
             {
-                IEnumerable<AppointSlot> appointSlots = from asl in db.AppointSlots
-                                                        where asl.Id == slotId
-                                                        select asl;
-                foreach (AppointSlot appointSlot in appointSlots)
+                int slotId = Convert.ToInt32(slot);
+                if (slotId > 0)
                 {
-                    appointSlot.Selected = true;
-                }
-                try
-                {
+                    IEnumerable<AppointSlot> appointSlots = from asl in db.AppointSlots
+                                                            where asl.Id == slotId
+                                                            select asl;
+                    foreach (AppointSlot appointSlot in appointSlots)
+                    {
+                        appointSlot.Selected = true;
+                    }
                     db.SaveChanges();
                     return "Slot Selected";
                 }
-                catch { }
+                return "Slot Selected";
             }
-            return "Slot could not be Selected";
+            catch
+            {
+                return "Slot could not be Selected";
+            }
         }
 
+        /// <summary>
+        /// Gets the confirmed appointments from the database table AppointConfirms for which the tutor has sent paypal link and meeting link
+        /// </summary>
+        /// <param name="userId">The id of the studnet logged in</param>
+        /// <returns>JSON Object list of the confirmed appointments data</returns>
         [Route("GetAppointments")]
         [HttpPost]
         public string GetAppointments([FromBody] string userId)
         {
-            int user = Convert.ToInt32(userId);
             string jsonResults = "";
             try
             {
+                int user = Convert.ToInt32(userId);
                 List<GetAppointments> results = new List<GetAppointments>();
                 IEnumerable<int> studId = from sti in db.StudTutorInfos
                                           where sti.UserId == user
@@ -438,19 +557,23 @@ namespace Tutoring_Platform.Controllers
             }
         }
 
+        /// <summary>
+        /// Gets the Profile Info of the student from database
+        /// </summary>
+        /// <param name="userId">The id of the student logged in</param>
+        /// <returns>JSON Object of the profile data retreived</returns>
         [Route("GetInfo")]
         [HttpPost]
         public string GetInfo([FromBody] string userId)
         {
-            int user = Convert.ToInt32(userId);
             string jsonResults = "";
             try
             {
+                int user = Convert.ToInt32(userId);
                 List<ProfileData> results = new List<ProfileData>();
                 var stud = (from sti in db.StudTutorInfos
                             where sti.UserId == user
                             select new { sti, sti.User.Name, sti.User.Email }).ToArray();
-
                 if (stud.Length > 0)
                 {
                     ProfileData student = new ProfileData
@@ -477,6 +600,11 @@ namespace Tutoring_Platform.Controllers
             
         }
 
+        /// <summary>
+        /// Updates the profile data of the student by using the newly submitted data by the student
+        /// </summary>
+        /// <param name="student">The new profile data submitted by the student</param>
+        /// <returns>Success or failure message</returns>
         [Route("UpdateInfo")]
         [HttpPost]
         public string UpdateInfo([FromBody] ProfileData student)
@@ -509,17 +637,24 @@ namespace Tutoring_Platform.Controllers
             return "Profile could not be updated!";
         }
 
+        /// <summary>
+        /// This method is shared by both tutor and student side and it creates a record in the HelpQueries table
+        /// 
+        /// </summary>
+        /// <param name="query">The query message submitted by student or tutor</param>
+        /// <returns>Success or failure message</returns>
         [Route("AskQuery")]
         [HttpPost]
         public string AskQuery([FromBody] AskQuery query)
         {
-            if(query.UserId != null && query.Query != null)
+            try
             {
-                int user = (from sti in db.StudTutorInfos
-                           where sti.UserId == Convert.ToInt32(query.UserId)
-                           select sti.Id).First();
-                try
+                if (query.UserId != null && query.Query != null)
                 {
+                    int user = (from sti in db.StudTutorInfos
+                                where sti.UserId == Convert.ToInt32(query.UserId)
+                                select sti.Id).First();
+
                     HelpQuery helpQuery = new HelpQuery
                     {
                         UserId = user,
@@ -529,35 +664,60 @@ namespace Tutoring_Platform.Controllers
                     db.SaveChanges();
                     return "Query Sent!";
                 }
-                catch { }
+                return "Query Sent!";
             }
-            return "Could not send query!";
+            catch
+            {
+                return "Could not send query!";
+            } 
+            
         }
 
+        /// <summary>
+        /// This method creates a new record in ReportAccounts table when any user
+        /// reports another user
+        /// </summary>
+        /// <param name="reportRequest">The data related to the report request made by user</param>
+        /// <returns>Success or failure message</returns>
         [Route("ReportUser")]
         [HttpPost]
         public string ReportUser([FromBody] ReportAccountRequest reportRequest)
         {
-            if (reportRequest.AccountId != null && reportRequest.UserId != null)
+            try
             {
-                int user = (from sti in db.StudTutorInfos
-                           where sti.UserId == Convert.ToInt32(reportRequest.UserId)
-                           select sti.Id).First();
-                int tutor = (from ti in db.TutorInfos
-                             where ti.Id == Convert.ToInt32(reportRequest.AccountId)
-                             select ti.User.User.Id).First();
-                ReportAccount reportAccount = new ReportAccount
+                if (reportRequest.AccountId != null && reportRequest.UserId != null)
                 {
-                    UserId = user,
-                    AccountId = tutor
-                };
-                db.ReportAccounts.Add(reportAccount);
-                db.SaveChanges();
+                    int user = (from sti in db.StudTutorInfos
+                                where sti.UserId == Convert.ToInt32(reportRequest.UserId)
+                                select sti.Id).First();
+                    int tutor = (from ti in db.TutorInfos
+                                 where ti.Id == Convert.ToInt32(reportRequest.AccountId)
+                                 select ti.User.User.Id).First();
+                    ReportAccount reportAccount = new ReportAccount
+                    {
+                        UserId = user,
+                        AccountId = tutor
+                    };
+                    db.ReportAccounts.Add(reportAccount);
+                    db.SaveChanges();
+                    return "Report request sent!";
+                }
                 return "Report request sent!";
             }
-            return "Could not send the report request!";
+            catch
+            {
+                return "Could not send the report request!";
+            }
+            
+            
         }
 
+        /// <summary>
+        /// When the data and time of an apointment has passed, then either student or tutor can decide to mark the
+        /// appointment as done which removes all appointment related data from database
+        /// </summary>
+        /// <param name="confirmId">The id of the appointment in ApointConfirm table</param>
+        /// <returns>Success or failure message which tells the user if the appointment has been marked as done</returns>
         [Route("MarkAsDone")]
         [HttpPost]
         public string MarkAsDone([FromBody] string confirmId)
@@ -598,6 +758,41 @@ namespace Tutoring_Platform.Controllers
             catch(Exception)
             {
                 return "The appointment could not be marked as Done!";
+            }
+        }
+
+        /// <summary>
+        /// If the admin has replied to any user queries then that data gets stored in AdminReplies table
+        /// This method retreives the reply to the queries that logged in user had made
+        /// </summary>
+        /// <param name="userId">The id of logged in user</param>
+        /// <returns>JSON Object list of the admin replies</returns>
+        [Route("GetReplies")]
+        [HttpPost]
+        public string GetReplies([FromBody] string userId)
+        {
+            string jsonResults = "";
+            try
+            {
+                var replies = from r in db.AdminReplies
+                              where r.Query.User.User.Id == Convert.ToInt32(userId)
+                              select new {r.Id,r.Query.Query,r.Message};
+                List<GetReplies> results = new List<GetReplies>();
+                foreach (var ar in replies)
+                {
+                    GetReplies getReplies = new GetReplies
+                    {
+                        question = ar.Query,
+                        answer = ar.Message
+                    };
+                    results.Add(getReplies);
+                }
+                jsonResults = JsonConvert.SerializeObject(results);
+                return jsonResults;
+            }
+            catch
+            {
+                return jsonResults;
             }
         }
     }

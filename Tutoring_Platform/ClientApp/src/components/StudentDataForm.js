@@ -3,17 +3,21 @@ import { useAuth0 }
     from "@auth0/auth0-react";
 import { useState } from 'react';
 
-
+/**
+ * 
+ * This function is shared by student and tutor side and it is used to submit the profile info data of the user
+ * @param {any} props there is only one props for this function, which is role
+ */
 export function StudentDataForm(props) {
-    const { user, isAuthenticated } = useAuth0();
+    const { user } = useAuth0();
     const [name, setName] = useState("");
     const [errorMessage, setError] = useState("");
     const [address, setAddress] = useState("");
     const [city, setCity] = useState("");
     const [postal, setPostal] = useState("");
-    const [province, setProvince] = useState("");
+    const [province, setProvince] = useState("Alberta");
+    const [field, setField] = useState("Arts and Humanities");
     const [school, setSchool] = useState("");
-    const [field, setField] = useState("");
     const [program, setProgram] = useState("");
     const [semester, setSemester] = useState(0);
 
@@ -47,8 +51,8 @@ export function StudentDataForm(props) {
 
     const submitForm = (e) => {
         e.preventDefault();
-        if (name != "" && address != "" && city != "" && province != "" && school != "" &&
-            field != "" && program != "") {
+        if (name.trim() != "" && address.trim() != "" && city.trim() != "" && province.trim() != "" && school.trim() != "" &&
+            field.trim() != "" && program.trim() != "") {
             createStudent();
         }
         else {
@@ -64,14 +68,14 @@ export function StudentDataForm(props) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                name: name,
-                address: address,
-                city: city,
-                postal: postal,
-                province: province,
-                school: school,
-                field: field,
-                program: program,
+                name: name.trim(),
+                address: address.trim(),
+                city: city.trim(),
+                postal: postal.trim(),
+                province: province.trim(),
+                school: school.trim(),
+                field: field.trim(),
+                program: program.trim(),
                 semester: semester.toString(),
                 userId: user.sub.substring(6),
                 role: props.role
@@ -89,11 +93,11 @@ export function StudentDataForm(props) {
                 <form onSubmit={submitForm}>
                     <div className="row">
                         <div className="col-6">
-                            <p><strong>Name</strong>: <input type="text" value={name} onChange={nameChange} /></p>
-                            <p><strong>Address</strong>: <input type="text" value={address} onChange={addressChange} /></p>
-                            <p><strong>City</strong>: <input type="text" value={city} onChange={cityChange} /></p>
-                            <p><strong>Postal Code</strong>: <input type="text" value={postal} onChange={postalChange} /></p>
-                            <p><strong>Province</strong>: <select value={province} onChange={provinceChange}>
+                            <p><strong>Name</strong> <input type="text" value={name} onChange={nameChange} /></p>
+                            <p><strong>Address</strong> <input type="text" value={address} onChange={addressChange} /></p>
+                            <p><strong>City</strong> <input type="text" value={city} onChange={cityChange} /></p>
+                            <p><strong>Postal Code</strong> <input type="text" value={postal} onChange={postalChange} /></p>
+                            <p><strong>Province</strong> <select value={province} onChange={provinceChange}>
                                 <option value="Alberta">Alberta</option>
                                 <option value="British Columbia">British Columbia</option>
                                 <option value="Manitoba">Manitoba</option>
@@ -112,10 +116,21 @@ export function StudentDataForm(props) {
                             <p className="text-primary">{errorMessage}</p>
                         </div>
                         <div className="col-6">
-                            <p><strong>School</strong>: <input type="text" value={school} onChange={schoolChange} /></p>
-                            <p><strong>Field of Study</strong>: <input type="text" value={field} onChange={fieldChange} /></p>
-                            <p><strong>Program Name</strong>: <input type="text" value={program} onChange={programChange} /></p>
-                            <p><strong>Semester</strong>: <input type="number" value={semester} onChange={semesterChange} /> Enter 0 if you have graduated</p>
+                            <p><strong>School</strong> <input type="text" value={school} onChange={schoolChange} /></p>
+                            <p><strong>Field of Study</strong> <select value={field} onChange={fieldChange}>
+                                <option value="Arts and Humanities">Arts & Humanities</option>
+                                <option value="Business and Management">Business & Management</option>
+                                <option value="Computer Sciences">Computer Sciences</option>
+                                <option value="Education">Education</option>
+                                <option value="Fine Arts" >Fine Arts</option>
+                                <option value="Engineering and Technology">Engineering & Technology</option>
+                                <option value="Mathematics">Mathematics</option>
+                                <option value="Medicine and Life Sciences">Medicine and Life Sciences</option>
+                                <option value="Natural Sciences" >Natural Sciences</option>
+                                <option value="Social Sciences">Social Sciences</option>
+                            </select></p>
+                            <p><strong>Program Name</strong> <input type="text" value={program} onChange={programChange} /></p>
+                            <p><strong>Semester</strong> <input type="number" value={semester} onChange={semesterChange} /> Enter 0 if you have graduated</p>
                         </div>
                     </div>
                    

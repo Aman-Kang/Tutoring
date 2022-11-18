@@ -2,9 +2,11 @@
 import { useEffect, useState } from 'react';
 import { useAuth0 }
     from "@auth0/auth0-react";
-
+/**
+ * This function is created for Admin Check Statistics page and is imported in NavBar.js
+ * */
 export function AdminCheckStats() {
-    const { user} = useAuth0();
+    const { user, isAuthenticated } = useAuth0();
     const [stats, setStats] = useState([]);
 
     const getStats = () => {
@@ -22,15 +24,18 @@ export function AdminCheckStats() {
             });
     }
     useEffect(() => {
-        getStats();
+        if (isAuthenticated) {
+            getStats();
+        }
+        
     }, []);
     return (
         <div>
             <h2>Statistics</h2>
             {stats.map((a, index) =>
                 <div key={index}>
-                    <strong>{a.Name} - </strong>{a.Data }
-                    <br />
+                    <p><strong>{a.Name} - </strong>{a.Data}</p>
+                    <br /><br />
                 </div>
             )
             }

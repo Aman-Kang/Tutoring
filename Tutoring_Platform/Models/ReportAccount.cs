@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace Tutoring_Platform.Models
 {
+    /// <summary>
+    /// Any accounts reported by the users are referenced in ReportAccount class.
+    /// </summary>
     public partial class ReportAccount
     {
         public int Id { get; set; }

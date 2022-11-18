@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace Tutoring_Platform.Models
 {
+    /// <summary>
+    /// DaysAvailable class holds the data related to available days of the tutor.
+    /// </summary>
     public partial class DaysAvailable
     {
         public int Id { get; set; }

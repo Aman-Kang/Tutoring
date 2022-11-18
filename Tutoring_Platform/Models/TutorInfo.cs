@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace Tutoring_Platform.Models
 {
+    /// <summary>
+    /// TutorInfo holds the data of the tutors
+    /// </summary>
     public partial class TutorInfo
     {
         public TutorInfo()

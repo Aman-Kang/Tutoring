@@ -3,13 +3,17 @@ import { useAuth0 }
     from "@auth0/auth0-react";
 import { useEffect, useState } from 'react';
 
+/**
+ * This function is responsible for Admin account page display and is imported in NavBar.js
+ * */
 export function AdminAccount() {
-    const { user} = useAuth0();
-    const [errorMessage, setError] = useState("");
+    const { user, isAuthenticated } = useAuth0();
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     useEffect(() => {
-        getInfo();
+        if (isAuthenticated) {
+            getInfo();
+        }
     }, []);
     const getInfo = () => {
         fetch('admin/GetInfo', {
@@ -27,15 +31,15 @@ export function AdminAccount() {
 
             });
     }
+    
     return (
         <div>
             < div className="row" >
                 <div className="col">
-                    <p><strong>Name</strong> - {name }</p>
-                    <p><strong>Email</strong> - { email}</p>
-                    
+                    <p><strong>Name</strong> - {name}</p>
+                    <p><strong>Email</strong> - {email}</p>
+
                 </div>
-                
             </ div >
         </div>
     );

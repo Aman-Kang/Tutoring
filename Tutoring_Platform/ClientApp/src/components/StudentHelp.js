@@ -1,13 +1,19 @@
-﻿import React, { Component } from 'react';
+﻿import React from 'react';
 import { useAuth0 }
     from "@auth0/auth0-react";
 import { useEffect, useState } from 'react';
+
+/**
+ * Creates the Help page for student and tutor where they can submit a query and check out the replies submitted by the
+ * admin
+ * */
 export function StudentHelp() {
     const { user, isAuthenticated } = useAuth0();
     const [query, setQuery] = useState("");
+    const [replies, setReplies] = useState([]);
     const [errorMessage, setError] = useState("");
     const AskQuery = () => {
-        if (query != "") {
+        if (query.trim() != "") {
             setError("");
             fetch('student/AskQuery', {
                 method: 'POST',
@@ -16,7 +22,7 @@ export function StudentHelp() {
                 },
                 body: JSON.stringify({
                     userId: user.sub.substring(6),
-                    query: query
+                    query: query.trim()
                 })
             }).then(res => res.text())
                 .then(data => {
@@ -28,9 +34,29 @@ export function StudentHelp() {
         }
         
     }
+
+    const getReplies = () => {
+        fetch('student/GetReplies', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(user.sub.substring(6))
+        }).then(res => res.json())
+            .then(data => {
+                setReplies(data);
+        });
+    }
+
+
     const textChange = (e) => {
         setQuery(e.target.value);
     }
+    useEffect(() => {
+        if (isAuthenticated) {
+            getReplies();
+        }
+    }, []);
     return (
         <div>
             <p>What do you need help with?</p>
@@ -41,6 +67,19 @@ export function StudentHelp() {
             /></p>
             <button className="btn btn-info" onClick={AskQuery}>Send</button>
             <p className="text-primary">{errorMessage}</p>
+            <br />
+
+            <h4>Query Replies</h4>
+            {(Object.keys(replies).length > 0) ? replies.map((a, index) =>
+                <div key={index}>
+                    <ul>
+                        <li><strong>{a.question}</strong></li>
+                    </ul>
+                        <p> - {a.answer }</p>
+                        <br />
+                    </div>
+                ) : <p>No queries have been replied for now!</p>
+            }
         </div>
     );
     
