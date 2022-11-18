@@ -77,7 +77,7 @@ export function NavBar(){
                             </Navbar>
                         </header>
                         <Container>
-                            <h4>Enter all details to complete your profile</h4>
+                            <h4>Enter all details to complete your profile</h4><br />
                             <StudentDataForm role={role} />
                         </Container>
                    </div>
@@ -138,7 +138,7 @@ export function NavBar(){
                         </header>
 
                         <Container>
-                            <h4>Enter all details to complete your profile</h4>
+                            <h4>Enter all details to complete your profile</h4><br />
                             <StudentDataForm role={role} />
                         </Container>
                     </div>

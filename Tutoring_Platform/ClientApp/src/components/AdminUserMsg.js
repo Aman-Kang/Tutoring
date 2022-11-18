@@ -59,7 +59,7 @@ export function AdminUserMsg(){
     }
     return (
         <div>
-            <h3>User Messages</h3>
+            <h2>User Messages</h2><br />
             <p className="text-primary">{errorMessage}</p>
             {(Object.keys(queries).length > 0) ? queries.map((q, index) =>
                 <div key={index}>

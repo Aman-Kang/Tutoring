@@ -69,7 +69,7 @@ export function StudentHelp() {
             <p className="text-primary">{errorMessage}</p>
             <br />
 
-            <h4>Query Replies</h4>
+            <h3>Query Replies</h3><br />
             {(Object.keys(replies).length > 0) ? replies.map((a, index) =>
                 <div key={index}>
                     <ul>

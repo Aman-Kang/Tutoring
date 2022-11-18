@@ -388,6 +388,18 @@ namespace Tutoring_Platform.Controllers
                 };
                 getStats.Add(stats);
 
+                var usersProvince2 = db.StudTutorInfos
+                                    .GroupBy(s => s.Province)
+                                    .OrderBy(gs => gs.Count())
+                                    .Take(1)
+                                    .Select(s => s.Key).ToList();
+                stats = new GetStats
+                {
+                    Name = "Province with minimum users",
+                    Data = usersProvince2.First()
+                };
+                getStats.Add(stats);
+
                 var usersField = db.StudTutorInfos
                                     .GroupBy(s => s.StudyField)
                                     .OrderByDescending(gs => gs.Count())
@@ -400,8 +412,21 @@ namespace Tutoring_Platform.Controllers
                 };
                 getStats.Add(stats);
 
+                var usersField2 = db.StudTutorInfos
+                                    .GroupBy(s => s.StudyField)
+                                    .OrderBy(gs => gs.Count())
+                                    .Take(1)
+                                    .Select(s => s.Key).ToList();
+                stats = new GetStats
+                {
+                    Name = "Study Field with minimum users",
+                    Data = usersField2.First()
+                };
+                getStats.Add(stats);
+
                 jsonResults = JsonConvert.SerializeObject(getStats);
                 return jsonResults;
+
             }
             catch
             {

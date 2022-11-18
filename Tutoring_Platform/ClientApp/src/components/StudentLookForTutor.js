@@ -173,12 +173,12 @@ export function StudentLookForTutor() {
 
     return (
         <div>
-            <p>Enter the below mentioned details so that we can find you a perfect tutor!</p>
+            <p>Enter the below mentioned details so that we can find you a perfect tutor!</p><br />
             <p className="text-primary">{errorMessage}</p>
             <form onSubmit={onSubmit}>
                 <div className="row">
                     <div className="col-6">
-                        <p>Program Course in which you need help (Write the full name of the course)</p>
+                        <p>Program Course in which you need help: </p>
                         <p><input type="text" value={courseName} onChange={courseNameChange }/></p>
                         
                     </div>
@@ -199,7 +199,7 @@ export function StudentLookForTutor() {
                     </div>
                 </div>
             </form>
-            
+            <br />
             <h4>List of tutors based on your search:</h4>
             <br/>
             <div className="row">

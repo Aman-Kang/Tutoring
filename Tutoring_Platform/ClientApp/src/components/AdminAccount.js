@@ -35,8 +35,9 @@ export function AdminAccount() {
     return (
         <div>
             < div className="row" >
+                <h4>Profile</h4><br />
                 <div className="col">
-                    <p><strong>Name</strong> - {name}</p>
+                    <p><strong>Name</strong> - {name}</p><br/>
                     <p><strong>Email</strong> - {email}</p>
 
                 </div>

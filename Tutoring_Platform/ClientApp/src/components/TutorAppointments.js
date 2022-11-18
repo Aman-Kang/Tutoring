@@ -114,7 +114,7 @@ export function TutorAppointments(){
     return (
         <div>
             <p>It is your responsibility to check that the student has transferred the money to your account an hour before every session. If the transfer is not made, you can choose to not go to the session.</p>
-            <h3>Upcoming Appointments</h3>
+            <h2>Upcoming Appointments</h2><br />
             <p className="text-primary">{response}</p>
             {(Object.keys(appointmentsA).length > 0) ? appointmentsA.map((a, index) =>
                 <div key={index}>
@@ -132,7 +132,7 @@ export function TutorAppointments(){
                 </div>
             ):<p>No booked appointments for now!</p>
             }
-            <h3>Confirmed Appointments By Students</h3>
+            <h2>Confirmed Appointments By Students</h2><br />
             <p className="text-primary">{errorMessage}</p>
             {(Object.keys(appointments).length > 0) ?
                 appointments.map((a, index) =>

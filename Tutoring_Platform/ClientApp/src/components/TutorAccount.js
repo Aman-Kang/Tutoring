@@ -210,6 +210,7 @@ export function TutorAccount() {
     return (
         <div>
             < div className="row" >
+                <h2>Profile</h2><br />
                 <div className="col">
                     < p ><strong>Name</strong> {name}</ p >
                     < p ><strong>Email</strong> {user.email}</ p >

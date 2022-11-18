@@ -105,7 +105,7 @@ export function TutorMessageRequests(){
     }
     return (
         <div>
-            <h3>Tutoring Requests by students</h3>
+            <h2>Tutoring Requests by students</h2><br />
             <p className="text-primary">{errorMessage}</p>
             <div>
                 {(Object.keys(requests).length > 0) ?

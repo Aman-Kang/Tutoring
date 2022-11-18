@@ -108,7 +108,7 @@ export function StudentAppointments() {
     return (
         <div>
             <p>You cannot attend any class without making the payment to the tutor. Pay the tutor an hour before the session otherwise the tutor will not be coming to the session.</p>
-            <h3>Upcoming Appointments</h3>
+            <h2>Upcoming Appointments</h2><br />
             <p className="text-primary">{response}</p>
             {(Object.keys(appointments).length > 0) ?
                 appointments.map((a, index) =>
@@ -130,7 +130,7 @@ export function StudentAppointments() {
                 ) : <p>No appointments booked for now!</p>
 
             }
-            <h3>Appointment Request By Tutor</h3>
+            <h2>Appointment Request By Tutor</h2><br />
             <p className="text-primary">{errorMessage}</p>
             {(Object.keys(requests).length > 0) ? requests.map((r, index) =>
                 <div key={index}>

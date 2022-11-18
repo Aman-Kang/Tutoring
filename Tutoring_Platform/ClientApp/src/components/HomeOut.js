@@ -7,8 +7,8 @@ export function HomeOut() {
 
     return (
         <div>
-            <h3>Welcome to Tutoriaa</h3>
-            <img src={require('./images/tutoring_image.jpg')} />
+            <div className="text-center"><h3>Welcome to Tutoriaa</h3><br /></div>
+            <div><img className="rounded mx-auto d-block" src={require('./images/tutoring_image.jpg')} /></div>
         </div>
     );
 }

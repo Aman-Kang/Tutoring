@@ -31,11 +31,11 @@ export function AdminCheckStats() {
     }, []);
     return (
         <div>
-            <h2>Statistics</h2>
+            <h2>Statistics</h2><br />
             {stats.map((a, index) =>
                 <div key={index}>
                     <p><strong>{a.Name} - </strong>{a.Data}</p>
-                    <br /><br />
+                    <br />
                 </div>
             )
             }

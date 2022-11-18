@@ -46,7 +46,7 @@ export function AdminReportAcct(){
     }, []);
     return (
         <div>
-            <h3>Reported Accounts</h3>
+            <h2>Reported Accounts</h2><br />
             <p className="text-primary">{error}</p>
             {(Object.keys(accounts).length > 0) ? accounts.map((a, index) =>
                 <div key={index}>
