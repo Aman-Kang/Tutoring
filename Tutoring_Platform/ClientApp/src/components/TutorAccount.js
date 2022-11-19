@@ -210,8 +210,8 @@ export function TutorAccount() {
     return (
         <div>
             < div className="row" >
-                <h2>Profile</h2><br />
                 <div className="col">
+                    <h2>Profile</h2><br />
                     < p ><strong>Name</strong> {name}</ p >
                     < p ><strong>Email</strong> {user.email}</ p >
                     <p><strong>Address</strong> <input type="text" value={address} onChange={addressChange} /></p>

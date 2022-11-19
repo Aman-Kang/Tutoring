@@ -34,7 +34,6 @@ export function AdminReportAcct(){
         }).then(res => res.text())
             .then(data => {
                 setError(data);
-                window.location.reload(false);
                 getReportedAcc();
             });
     }

@@ -69,6 +69,7 @@ export function AdminUserMsg(){
                                 <p>{q.Query}</p>
                                 <p><strong>Enter you response</strong>: </p>
                                 <p><textarea
+                                    value={reply}
                                     onChange={replyChange}
                                     rows={5}
                                     cols={50}

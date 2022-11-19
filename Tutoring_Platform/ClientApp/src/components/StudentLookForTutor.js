@@ -130,6 +130,7 @@ export function StudentLookForTutor() {
                 setThursday(0);
                 setFriday(0);
                 setSaturday(0);
+
             });
     }
 
@@ -151,6 +152,7 @@ export function StudentLookForTutor() {
         }).then(res => res.text())
             .then(data => {
                 setResponse(data);
+                setMessage("");
             });
     }
     function reportUser(tutorId) {

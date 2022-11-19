@@ -61,6 +61,7 @@ export function StudentHelp() {
         <div>
             <p>What do you need help with?</p>
             <p><textarea
+                value={query }
                 onChange={textChange}
                 rows={5}
                 cols={50}

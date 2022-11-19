@@ -222,18 +222,24 @@ namespace Tutoring_Platform.Controllers
                     List<SearchTutorsReturn> results = new List<SearchTutorsReturn>();
                     for (int i = 0; i < allTutors.GetLength(0); i++)
                     {
-                        results.Add(new SearchTutorsReturn
+                        var sameTutorWithAnotherCourse = from r in results
+                                                         where r.Name == allTutors[i, 0]
+                                                         select r;
+                        if(sameTutorWithAnotherCourse.Count() <= 0)
                         {
-                            studId = allTutors[i, 1],
-                            Name = allTutors[i, 0],
-                            School = allTutors[i, 2],
-                            Program = allTutors[i, 3],
-                            Status = allTutors[i, 4],
-                            Wage = allTutors[i, 5],
-                            tutorId = allTutors[i, 6],
-                            CourseName = tutorParams.CourseName,
-                            Days = tutorParams.Days
-                        });
+                            results.Add(new SearchTutorsReturn
+                            {
+                                studId = allTutors[i, 1],
+                                Name = allTutors[i, 0],
+                                School = allTutors[i, 2],
+                                Program = allTutors[i, 3],
+                                Status = allTutors[i, 4],
+                                Wage = allTutors[i, 5],
+                                tutorId = allTutors[i, 6],
+                                CourseName = tutorParams.CourseName,
+                                Days = tutorParams.Days
+                            });
+                        }
                     }
                     jsonResults = JsonConvert.SerializeObject(results);
                 }

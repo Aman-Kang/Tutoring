@@ -54,6 +54,8 @@ export function TutorAppointments(){
                     setError(data);
                     setPaypal("");
                     setZoom("");
+                    getAppointments();
+                    displayAppoints();
                 });
         } else {
             setError("All fields should be filled in to submit the request!")
@@ -75,41 +77,27 @@ export function TutorAppointments(){
     function markAsDone(confirmId, appointmentDate) {
         setError("");
         setResponse("");
-        var today = new Date();
-        var year = parseInt(appointmentDate.substring(0, 4));
-        var month = parseInt(appointmentDate.substring(5, 7));
-        var day = parseInt(appointmentDate.substring(8, 10));
-        var hour = parseInt(appointmentDate.substring(11, 13));
-        var min = parseInt(appointmentDate.substring(14, 16));
-
-        const date = new Date(year, month, day, hour, min);
-        console.log(today.getTime() + ", " + date.getTime());
-        console.log(confirmId);
-        if (today.getTime() <= date.getTime()) {
-            setError("");
-            fetch('student/MarkAsDone', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(String(confirmId))
-            }).then(res => res.text())
-                .then(data => {
-                    setResponse(data);
-                    window.location.reload(false);
-                    getAppointments();
-                    displayAppoints();
-                });
-        } else {
-            setResponse("The appointment can only be marked as done if the appointment date and time has passed!")
-        }
+        
+        setError("");
+        fetch('student/MarkAsDone', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(String(confirmId))
+        }).then(res => res.text())
+            .then(data => {
+                setResponse(data);
+                getAppointments();
+                displayAppoints();
+            });
+        
     }
     useEffect(() => {
         if (isAuthenticated) {
             getAppointments();
             displayAppoints();
         }
-        
     }, []);
     return (
         <div>
@@ -124,7 +112,7 @@ export function TutorAppointments(){
                                 <p><strong>Time</strong> - {a.Date.substring(11)}</p>
                                 <p><strong>Course</strong> - {a.Course}</p>
                                 <p><strong>Student</strong> - {a.TutorStud}</p>
-                                <p><strong>Meeting Link</strong> - {a.Zoom}</p>
+                                <p><strong>Meeting Link</strong> - <a href={a.Zoom}>{a.Zoom}</a></p>
                                 <button className="btn btn-info" onClick={(e) => markAsDone(a.ConfirmId, a.Date, e)}>Mark this appointment as Done</button>
                             </div>
                         } />
